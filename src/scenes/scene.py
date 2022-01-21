@@ -8,7 +8,7 @@ class Scene:
 
     def render(self):
         for figure in self.figures:
-            self.canvas.change_color_mapping(figure.props.color_mapping)
+            self.canvas.change_coloring(figure.props.coloring)
             figure.canvas = self.canvas
             figure.draw()
     

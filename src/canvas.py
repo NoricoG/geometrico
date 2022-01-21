@@ -19,11 +19,11 @@ class Canvas:
         self.im = Image.new('RGB', (self.width, self.height), background)
         self.im_draw = ImageDraw.Draw(self.im)
 
-    def change_color_mapping(self, color_mapping):
-        self.color_mapping = color_mapping
+    def change_coloring(self, coloring):
+        self.coloring = coloring
 
     def draw(self, polygon, color):
-        fill = self.color_mapping[color]
+        fill = self.coloring.mapping[color]
 
         # if fill is None, polygon is transparent, so don't draw
         if not fill:

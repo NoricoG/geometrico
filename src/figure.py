@@ -9,7 +9,7 @@ class Figure:
         self.canvas = canvas
 
     def draw(self):
-        if self.level == 0:
+        if self.level <= 0:
             self.canvas.draw(self.polygon, self.color)
         else:
             self.divide()

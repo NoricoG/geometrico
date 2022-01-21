@@ -12,26 +12,40 @@ class Rectangle_4(Shape):
 
         options['polygon'] = {
             'straight': [
-                lambda vertices: [vertices[0],                               middle(vertices)],
-                lambda vertices: [[middle_dim(vertices, x), vertices[0][y]], [vertices[1][x], middle_dim(vertices, y)]],
-                lambda vertices: [[vertices[0][x], middle_dim(vertices, y)], [middle_dim(vertices, x), vertices[1][y]]],
-                lambda vertices: [middle(vertices),                          vertices[1]],
+                lambda vertices: [ vertices[0],                               middle(vertices) ],
+                lambda vertices: [ [middle_dim(vertices, x), vertices[0][y]], [vertices[1][x], middle_dim(vertices, y)] ],
+                lambda vertices: [ [vertices[0][x], middle_dim(vertices, y)], [middle_dim(vertices, x), vertices[1][y]] ],
+                lambda vertices: [ middle(vertices),                          vertices[1] ],
             ],
             'to_center': [
-                lambda vertices: [middle(vertices), vertices[0]],
-                lambda vertices: [middle(vertices), [vertices[1][x], vertices[0][y]]],
-                lambda vertices: [middle(vertices), [vertices[0][x], vertices[1][y]]],
-                lambda vertices: [middle(vertices), vertices[1]],
-            ]
-            # rotate_90, rotate_180, rotate_270
+                lambda vertices: [ middle(vertices), vertices[0] ],
+                lambda vertices: [ middle(vertices), [vertices[1][x], vertices[0][y]] ],
+                lambda vertices: [ middle(vertices), [vertices[0][x], vertices[1][y]] ],
+                lambda vertices: [ middle(vertices), vertices[1] ],
+            ],
+            'from_center': [
+                lambda vertices: [ vertices[0],                      middle(vertices) ],
+                lambda vertices: [ [vertices[1][x], vertices[0][y]], middle(vertices) ],
+                lambda vertices: [ [vertices[0][x], vertices[1][y]], middle(vertices) ],
+                lambda vertices: [ vertices[1],                      middle(vertices) ],
+            ],
+            'rotate_90': [
+                lambda vertices: [ [middle_dim(vertices, x), vertices[0][y]], [vertices[0][x], middle_dim(vertices, y)] ],
+                lambda vertices: [ [vertices[1][x], vertices[0][y]],          middle(vertices) ],
+                lambda vertices: [  middle(vertices),                         [vertices[0][x], vertices[1][y]] ],
+                lambda vertices: [ [vertices[1][x], middle_dim(vertices, y)], [middle_dim(vertices, x), vertices[1][y]] ], 
+            ],
+            # rotate_180, rotate_270
         }
 
         options['color'] = {
             'checkerboard': [inverse, same, same, inverse],
             'corner': [inverse, same, same, same],
             'not_corner': [same, inverse, inverse, inverse],
-            'random': [one_or_zero, one_or_zero, one_or_zero, one_or_zero],
+            'random_completely': [one_or_zero, one_or_zero, one_or_zero, one_or_zero],
             'random_diagonal': [one_or_zero, inverse, inverse, one_or_zero],
+            'random_corner_inverse': [one_or_zero, inverse, inverse, inverse],
+            'random_corner_same': [one_or_zero, same, same, same],
         }
 
         options['level'] = {
