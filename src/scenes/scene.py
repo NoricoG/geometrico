@@ -1,28 +1,18 @@
-from figure import Figure
-from config.common import max_polygon_count
+from canvas import Canvas
+
 
 class Scene:
-    def __init__(self, drawer, layers):
-        self.drawer = drawer
-        self.layers = layers
+    def __init__(self, background, figures):
+        self.canvas = Canvas(background)
+        self.figures = figures
 
+    def render(self):
+        for figure in self.figures:
+            self.canvas.change_color_mapping(figure.props.color_mapping)
+            figure.canvas = self.canvas
+            figure.draw()
+    
     def show(self):
-        self.drawer.new(background=self.layers[0].color_mapping['bg'])
-        for layer in self.layers:
-            layer.draw()      
         print('Showtime')
-        self.drawer.show()
-
-class Layer:
-    def __init__(self, drawer, color_mapping, random_color, config, color, level):
-        self.drawer = drawer
-        self.color_mapping = color_mapping
-        self.random_color = random_color
-        self.config = config
-        self.color = color
-        self.level = level
-
-    def draw(self):
-        self.config.estimate_polygon_count(self.level, max_polygon_count)
-        self.drawer.setup(self.color_mapping, self.random_color)
-        Figure(self.config, self.drawer, self.config.outer_polygon, self.color, self.level)
+        self.canvas.show()
+        print()

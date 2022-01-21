@@ -1,0 +1,5 @@
+[flake8]
+max-line-length = 140
+# ignore = D
+ignore = D, E221, E241, E501, E731, F403, F405  # for src/shapes, readability > style
+docstring-convention=numpy

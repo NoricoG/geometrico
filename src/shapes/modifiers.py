@@ -1,6 +1,7 @@
 from math import floor
 import random
 
+# functions to modify a dynamic property of a figure
 decrement      = lambda x: x - 1
 decrement_slow = lambda x: x - 0.5
 half           = lambda x: x / 2

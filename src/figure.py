@@ -1,36 +1,31 @@
 class Figure:
-    def __init__(self, config, drawer, polygon, color, level):
-        self.config = config
-        self.drawer = drawer
+    def __init__(self, polygon, color, level, props, canvas=None):
+        # specific for this figure
         self.polygon = polygon
         self.color = color
         self.level = level
+        # shared with parent figures and child figures
+        self.props = props
+        self.canvas = canvas
 
-        # TODO: move to config
-        self.change_intermediate_color = False
-        self.change_final_color = True
-
-        # on creation, immediately draw the complete figure, including its subfigures
+    def draw(self):
         if self.level == 0:
-            self.draw()
+            self.canvas.draw(self.polygon, self.color)
         else:
             self.divide()
 
-    def draw(self):
-        self.drawer.draw(self.polygon, self.color)
-
     def divide(self):
         # depth-first traversal
-        for i in range(self.config.division):
+        for i in range(self.props.division):
             # get the properties of the subfigure
-            next_polygon = self.config.get_next('polygon', i, self.polygon)
-            next_level = self.config.get_next('level', i, self.level)
+            next_polygon = self.props.get_next('polygon', i, self.polygon)
+            next_level = self.props.get_next('level', i, self.level)
 
             next_color = self.color
-            if next_level != 0 and self.change_intermediate_color:
-                next_color = self.config.get_next('color', i, self.color)
-            if next_level == 0 and self.change_final_color:
-                next_color = self.config.get_next('color', i, self.color)
-            
-            # create the subfigure and implicitly draw it
-            Figure(self.config, self.drawer, next_polygon, next_color, next_level)
+            if next_level != 0 and self.props.change_intermediate_color:
+                next_color = self.props.get_next('color', i, self.color)
+            if next_level == 0 and self.props.change_final_color:
+                next_color = self.props.get_next('color', i, self.color)
+
+            # create the subfigure and draw it
+            Figure(next_polygon, next_color, next_level, self.props, self.canvas).draw()

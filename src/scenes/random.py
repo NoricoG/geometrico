@@ -1,21 +1,17 @@
 import random
 
-from config.figures.rectangle_4 import rectangle_4
-from config.figures.triangle_4 import triangle_4
-from config.figures.triangle_3 import triangle_3
-from config.figures.triangle_2 import triangle_2
-from scenes.scene import Scene, Layer
+from figure_props import FigureProps
+from shapes.rectangle_4 import Rectangle_4
+from shapes.triangle_4 import Triangle_4
+from shapes.triangle_3 import Triangle_3
+from shapes.triangle_2 import Triangle_2
+from scenes.scene import Scene
+from figure import Figure
+from color import get_random_color
 
-# TODO: create own one instead
-from config.common import drawer
-
-safe_level = 8
+max_polygon_count = 2 * 10 ** 6
+safe_level = 10
 number_of_scenes = 5
-
-random_colors = [
-    True,
-    False,
-]
 
 colors = [
     0,
@@ -26,38 +22,56 @@ colors = [
 color_mappings = [
     {'bg': 'grey', 0: 'black', 1: 'white'},
     {'bg': 'black', 0: None, 1: 'white'},
+    {'bg': 'white', 0: None, 1: 'black'},
+    {'bg': 'black', 0: None, 1: 'white'},
+    {'bg': 'black', 0: get_random_color(), 1: 'white'},
+    {'bg': 'white', 0: get_random_color(), 1: 'black'},
+    {'bg': 'black', 0: get_random_color(), 1: get_random_color()},
+    {'bg': 'white', 0: get_random_color(), 1: get_random_color()},
+    {'bg': get_random_color(), 0: get_random_color(), 1: get_random_color()},
+    {'bg': get_random_color(), 0: get_random_color(), 1: get_random_color()},  # twice because nice
+    {'bg': 'black', 0: get_random_color, 1: 'white'},
+    {'bg': 'white', 0: get_random_color, 1: 'black'},
 ]
+
+color_changes = [(True, True), (True, False), (False, True)]
 
 levels = [7, 9, 10, 11, 12, 13, 14]
 
-# TODO: different outer polygons in a nice way, separate of ConfigOptions
 polygon_rectangle = [[0, 0], [1, 1]]
-polygon_triangle = [[0.5, 0], [0, 1], [1,1]] 
+polygon_triangle = [[0.5, 0], [0, 1], [1, 1]]
 
-figure_options = [
-    # (rectangle_4, polygon_rectangle),
-    (triangle_4, polygon_triangle),
-    # (triangle_3, polygon_triangle),
-    # (triangle_2, polygon_triangle),
+shapes = [
+    # (Rectangle_4(), polygon_rectangle),
+    # (Triangle_4(), polygon_triangle),
+    (Triangle_3(), polygon_triangle),
+    # (Triangle_2(), polygon_triangle),
 ]
 
+class RandomScene(Scene):
+    def __init__(self):
+        color = random.choice(colors)
+        color_mapping = random.choice(color_mappings)
+        change_intermediate_color, change_final_color = random.choice(color_changes)
+        background = color_mapping['bg']
+        level = random.choice(levels)
+        shape, polygon = random.choice(shapes)
+        props = shape.get_random_props(color_mapping, change_intermediate_color, change_final_color)
+        print(props)
+        print(props.get_short_summary())
 
-def get_random_scene():
-    color = random.choice(colors)
-    random_color = random.choice(random_colors)
-    color_mapping = random.choice(color_mappings)
-    level = random.choice(levels)
-    figure_option, polygon = random.choice(figure_options)
-    config = figure_option.choose_randomly(polygon)
-    layer = Layer(drawer, color_mapping, random_color, config, color, level)
-    return Scene(drawer, [layer])
+        if props.estimate_polygon_count(level) > max_polygon_count:
+            print(f'This combination of level value and level calculation can result in more than {max_polygon_count:,} polygons')
+            print(f'Changing level from {level} to {safe_level}')
+            level = safe_level
 
-for _ in range(number_of_scenes):
-    scene = get_random_scene()
-    try:
-        scene.show()
-    except ValueError:
-        print('Trying again with a lower level')
-        for layer in scene.layers:
-            layer.level = min(safe_level, layer.level)
+        figure = Figure(polygon, color, level, props)
+
+        super().__init__(background, [figure])
+
+
+if __name__ == '__main__':
+    for _ in range(number_of_scenes):
+        scene = RandomScene()
+        scene.render()
         scene.show()

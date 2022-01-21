@@ -1,0 +1,12 @@
+[tool.black]
+line-length = 140
+exclude = "modifiers.py|shapes"
+skip-string-normalization = true
+target-version = ['py38']
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+disallow_untyped_defs = false
+files = "src"
