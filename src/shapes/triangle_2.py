@@ -18,15 +18,15 @@ class Triangle_2(Shape):
         }
 
         options['color'] = {
-            'a': [inverse, same],
-            'b': [same, inverse],
+            'right_same': [inverse, same],
+            'left_same': [same, inverse],
         }
 
         options['level'] = {
             'full': [decrement, decrement],
             'mix': [decrement, floor_half],
-            'a': [zero, decrement],
-            'b': [decrement, zero],
+            'right': [zero, decrement],
+            'left': [decrement, zero],
         }
 
         super().__init__(division, options)

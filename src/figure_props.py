@@ -1,3 +1,13 @@
+import math
+
+def extra_round(n, precision):
+        digits = math.ceil(math.log10(n))
+        if digits <= precision:
+            return n
+        divide_by = 10 ** (digits - precision)
+        rounded = round(n / divide_by) * divide_by
+        return rounded
+
 class FigureProps:
     def __init__(self, next, division, generic_props, shape_name, choices):
         # dynamic properties
@@ -12,18 +22,23 @@ class FigureProps:
         # metadata
         self.shape_name = shape_name
         self.choices = choices
+        self.polygon_summary = ''
 
     def __str__(self):
-        return f'{self.shape_name} {self.choices} {self.coloring.name} int={self.change_intermediate_color} final={self.change_final_color}'
-
-    def get_short_summary(self):
-        short_choices = ''
-        for prop, choice in self.choices.items():
-            short_prop = prop[0]
-            short_choice = ''.join(str(part)[0] for part in choice.split('_'))
-            short_choices = f'{short_choices} {short_prop}={short_choice}'
-        color_changes = f'i={int(self.change_intermediate_color)} f={int(self.change_final_color)}'
-        return f'{self.shape_name[0]}{self.shape_name[-1]} {short_choices} {self.coloring.name} {color_changes}'
+        parts = []
+        parts.append(f'{self.shape_name[0]}{self.shape_name[-1]}')
+        parts.append(self.choices['polygon'])
+        parts.append(self.choices['level'])
+        parts.append('  ▬  ')
+        parts.append(self.polygon_summary)
+        parts.append('  ▬  ')
+        parts.append(self.coloring.name)
+        parts.append(self.choices['color'])
+        if self.change_intermediate_color:
+            parts.append('int')
+        if self.change_final_color:
+            parts.append('fin')
+        return ' '.join(parts)
 
     # get the value of a dynamic property
     # parameter can be polygon, color or level
@@ -46,5 +61,11 @@ class FigureProps:
         max_depth = max(depths)
         total_weighted_depths = sum(x / max_depth for x in depths)
         polygon_count = int(total_weighted_depths ** max_depth)
-        print(f'Number of polygons in the order of {total_weighted_depths:.2f}^{max_depth} = {polygon_count:,}')
+        print(f'{total_weighted_depths:.2f}^{max_depth} = {polygon_count:,} polygons')
+        self.set_polygon_summary(total_weighted_depths, max_depth, polygon_count)
         return polygon_count
+
+    def set_polygon_summary(self, base, depth, count):
+        count = extra_round(count, 2)
+        self.polygon_summary = f'{base:.1f}^{depth}={count:,}'
+

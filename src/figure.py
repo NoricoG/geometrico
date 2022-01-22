@@ -8,7 +8,7 @@ class Figure:
         self.props = props
         self.canvas = canvas
 
-    def draw(self):
+    def render(self):
         if self.level <= 0:
             self.canvas.draw(self.polygon, self.color)
         else:
@@ -27,5 +27,5 @@ class Figure:
             if next_level == 0 and self.props.change_final_color:
                 next_color = self.props.get_next('color', i, self.color)
 
-            # create the subfigure and draw it
-            Figure(next_polygon, next_color, next_level, self.props, self.canvas).draw()
+            # create the subfigure and render it
+            Figure(next_polygon, next_color, next_level, self.props, self.canvas).render()

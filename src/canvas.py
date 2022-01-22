@@ -1,46 +1,54 @@
-import math
-from PIL import Image, ImageDraw
-
-
-UPSCALING = 8
-WIDTH = 3000
-# slightly taller, to make sides of triangle equal
-HEIGHT = int(math.sqrt(WIDTH ** 2 - ((WIDTH / 2) ** 2)))
-
+import pygame
+from pygame import gfxdraw
 
 class Canvas:
-    def __init__(self, background):
-        self.upscaling = UPSCALING
-        self.width = WIDTH * self.upscaling
-        self.height = HEIGHT * self.upscaling
+    def __init__(self, width, height, background):
+        self.width = width
+        self.height = height
+        self.surface = pygame.Surface((self.width, self.height))
 
         if callable(background):
             background = background()
-        self.im = Image.new('RGB', (self.width, self.height), background)
-        self.im_draw = ImageDraw.Draw(self.im)
+        self.surface.fill(background)
 
     def change_coloring(self, coloring):
         self.coloring = coloring
 
-    def draw(self, polygon, color):
-        fill = self.coloring.mapping[color]
+    def draw(self, polygon, color_value):
+        color = self.coloring.mapping[color_value]
 
-        # if fill is None, polygon is transparent, so don't draw
-        if not fill:
+        # if color is None, polygon is transparent, so don't draw
+        if not color:
             return
 
         # generate a color, can be random each time
-        if callable(fill):
-            fill = fill()
+        if callable(color):
+            color = color()
 
         vertices = [(vertex[0] * self.width, vertex[1] * self.height) for vertex in polygon]
 
         if len(polygon) == 2:
-            self.im_draw.rectangle(vertices, fill=fill)
+            self.draw_square(color, vertices)
         else:
-            self.im_draw.polygon(vertices, fill=fill)
+            self.draw_polygon(color, vertices)
 
-    def show(self):
-        # downscale for smooth edges
-        self.im = self.im.resize((int(self.width / self.upscaling), int(self.height / self.upscaling)), Image.HAMMING)
-        self.im.show()
+    def draw_square(self, color, vertices):
+        # TODO: is vertex 0 ever smaller than vertex 1?
+        left = vertices[0][0]
+        top = vertices[0][1]
+        width = vertices[1][0] - vertices[0][0]
+        height = vertices[1][1] - vertices[0][1]
+        rect = pygame.Rect(left, top, width, height)
+        self.surface.fill(color, rect)
+
+    def draw_polygon(self, color, vertices):
+        raise NotImplementedError
+
+class StandardCanvas(Canvas):
+    def draw_polygon(self, color, vertices):
+        pygame.draw.polygon(self.surface, color, vertices)
+
+class GfxCanvas(Canvas):
+    def draw_polygon(self, color, vertices):
+        pygame.gfxdraw.aapolygon(self.surface, vertices, color)
+        pygame.gfxdraw.filled_polygon(self.surface, vertices, color)

@@ -19,8 +19,10 @@ class Triangle_3(Shape):
         }
 
         options['color'] = {
-            'a': [inverse, same, same],
-            'b': [same, inverse, same],
+            'tl_inverse': [inverse, same, same],
+            'tl_same': [same, inverse, same],
+            'bottom_inverse': [same, same, inverse],
+            'bottom_same': [inverse, inverse, same],
         }
 
         options['level'] = {
