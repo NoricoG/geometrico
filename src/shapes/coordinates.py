@@ -8,10 +8,10 @@ def y(vertex):
     return vertex[_y]
 
 def middle_x(vertices):
-    return middle_of_bounds(x, vertices)
+    return middle_of_bounds(_x, vertices)
 
 def middle_y(vertices):
-    return middle_of_bounds(y, vertices)
+    return middle_of_bounds(_y, vertices)
 
 def middle_of_bounds(dim, vertices):
     min_value = min([vertex[dim] for vertex in vertices])
