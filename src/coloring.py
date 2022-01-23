@@ -41,7 +41,10 @@ many_colorings = [
     Coloring('w *b', white, {0: get_random_color(), 1: black}),
     Coloring('b **', black, {0: get_random_color(), 1: get_random_color()}),
     Coloring('w **', white, {0: get_random_color(), 1: get_random_color()}),
-    Coloring('* **', get_random_color(), {0: get_random_color(), 1: get_random_color()}),
-    ] + 3 * [Coloring('b $w', black, {0: get_random_color, 1: white})
-    ] + 3 * [Coloring('w $b', white, {0: get_random_color, 1: black})
+    Coloring('* **', get_random_color(), {0: get_random_color(), 1: get_random_color()})] + [
+    Coloring('b $w', black, {0: get_random_color, 1: white})] * 3 + [
+    Coloring('w $b', white, {0: get_random_color, 1: black})] * 3 + [
+    # Coloring('b $*', black, {0: get_random_color, 1: get_random_color()})] * 3 + [
+    # Coloring('w $*', white, {0: get_random_color, 1: get_random_color()})] * 3 + [
+    Coloring('w $$', white, {0: get_random_color, 1: get_random_color})  
 ]

@@ -20,5 +20,24 @@ maybe_one      = lambda y: lambda _: random.choice([0] + [1] * y)
 same           = lambda x: x
 half           = lambda x: x / 2
 
+def rotator(times):
+    def rotate(vertices):
+        count = len(vertices)
+        rotated = [None] * count
+        for i, vertex in enumerate(vertices):
+            new_i = (i + times) % count
+            rotated[new_i] = vertex
+        return rotated
+    return rotate
 
+def flipper(swaps):
+    def flip(vertices):
+        for (a, b) in swaps:
+            temp = vertices[a]
+            vertices[a] = vertices[b]
+            vertices[b] = temp
+        return vertices
+    return flip
 
+flipper_rect_horizontal = flipper([(0, 1), (3, 2)])
+flipper_rect_vertical = flipper([(0, 3), (1, 2)])

@@ -6,7 +6,7 @@ import threading
 from queue import Queue, Empty
 from images.random import RandomImage
 
-UPSCALING = 1
+UPSCALING = 4
 WIDTH = 1000
 # slightly taller, to make sides of triangle equal
 HEIGHT = int(math.sqrt(WIDTH ** 2 - ((WIDTH / 2) ** 2)))
@@ -14,17 +14,25 @@ HEIGHT = int(math.sqrt(WIDTH ** 2 - ((WIDTH / 2) ** 2)))
 # no need to check for input often
 FPS = 30
 
-MINIMAL_BUFFER = 3
-DESIRED_BUFFER = 10
-RENDERING_LIMIT = 1
 
 
-def _add_to_buffer(buffer, rendering, errors):
+MINIMAL_BUFFER = 5
+DESIRED_BUFFER = 20
+RENDERING_LIMIT = 2
+
+DEBUG = True
+if DEBUG:
+    DESIRED_BUFFER = 10
+    RENDERING_LIMIT = 1
+
+
+def _add_to_buffer(buffer, rendering, errors, width, height):
     try:
         rendering.put(1)
+        pygame.init()
         fast = buffer.qsize() < MINIMAL_BUFFER
-        image = RandomImage(fast, WIDTH, HEIGHT)
-        image.render()
+        image = RandomImage(fast, width, height)
+        image.render() 
         buffer.put(image)
         rendering.get()
     except Exception as e:
@@ -32,10 +40,13 @@ def _add_to_buffer(buffer, rendering, errors):
         raise
 
 class App:
-    def __init__(self, width, height):
+    def __init__(self):
         pygame.init()
-        self.width = width
-        self.height = height
+        self.width = WIDTH
+        self.height = HEIGHT
+        self.upscaling = UPSCALING
+        self.scaled_width = self.width * self.upscaling
+        self.scaled_height = self.height * self.upscaling
         self.had_initial_resize = False
         self.had_initial_image = False
         self.waiting_for_buffer = False
@@ -65,13 +76,16 @@ class App:
         pygame.display.set_caption(f'{self.caption}   ▬   {ready} ready   ▬   {rendering} rendering')
 
     def add_to_buffer(self):
-        threading.Thread(
+        thread = threading.Thread(
             target=_add_to_buffer,
-            args=(self.buffer, self.rendering, self.errors)
-        ).start()
+            args=(self.buffer, self.rendering, self.errors, self.scaled_width, self.scaled_height)
+        )
+        thread.setDaemon(True)
+        thread.start()
 
     def show(self, image):
-        self.screen.blit(image.canvas.surface, (0, 0))
+        scaled = pygame.transform.smoothscale(image.canvas.surface, (self.width, self.height))
+        self.screen.blit(scaled, (0, 0))
         pygame.display.flip()
         self.update_caption(image.summary)
 
@@ -88,15 +102,20 @@ class App:
         
     def show_previous(self):
         self.show(self.previous_image)
+        # swap previous and current
+        temp = self.previous_image
+        self.previous_image = self.current_image
+        self.current_image = temp
 
     def handle_resize(self, event):
         if self.had_initial_resize:
             print(event)
             self.width = event.x
             self.height = event.y
-            old_surface = self.screen
+            self.scaled_width = self.width * self.upscaling
+            self.scaled_height = self.height * self.upscaling
             self.set_screen_mode()
-            self.screen.blit(old_surface, (0, 0))
+            self.show(self.current_image)
         else:
             self.had_initial_resize = True
 
@@ -118,8 +137,8 @@ class App:
                         self.show_from_buffer()
                     elif event.key == pygame.K_LEFT:
                         self.show_previous()
-                    if event.key == pygame.K_c:
-                        print('Exiting because C was pressed')
+                    if event.key == pygame.K_q:
+                        print('Exiting because Q was pressed')
                         sys.exit()
             
             if not self.had_initial_image and not self.buffer.empty():
@@ -137,10 +156,5 @@ class App:
             self.clock.tick(FPS)
             
 
-        
 if __name__ == '__main__':
-    App(WIDTH, HEIGHT).start()
-
-    
-    
-    
+    App().start()

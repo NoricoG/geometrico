@@ -1,11 +1,12 @@
-from shapes.shape import Shape
-from shapes.coordinates import x, y, middle_of_bounds as middle_dim, middle_of_bounding_box as middle
+from shapes.shape import Rectangle
+from shapes.coordinates import x, y, middle_x, middle_y, middle_xy as middle
 from shapes.modifiers import *
 
 # almost the same as Rectangle_4 with certain properties
 # needs more tweaking to be interesting
 # runtime random colors sometimes work
-class Rectangle_2(Shape):
+# rotate 90 and 270 are broken in nice ways
+class Rectangle_2(Rectangle):
     def __init__(self):
         division_labels = ['top', 'bottom']
         division = len(division_labels)
@@ -13,22 +14,17 @@ class Rectangle_2(Shape):
         options = {}
 
         options['polygon'] = {
-            # 'straight': [  # boring
-            #     lambda vertices: [ vertices[0],                               [vertices[1][x], middle_dim(vertices, y)] ],
-            #     lambda vertices: [ [vertices[0][x], middle_dim(vertices, y)], vertices[1] ],
-            # ],
-            # 'top_to_center': [  # ugly
-            #     lambda vertices: [ [middle_dim(vertices, x), vertices[1][y]], vertices[0] ],
-            #     lambda vertices: [ [middle_dim(vertices, y), vertices[0][x]], vertices[1] ],
-            # ],
-            # 'straigh_rotated_90': [  # doesn't rotate for some reason
-            #     lambda vertices: [ [vertices[1][x], vertices[0][y]],          [middle_dim(vertices, x), vertices[1][y]] ],
-            #     lambda vertices: [ [middle_dim(vertices, x), vertices[0][y]], [vertices[0][x], vertices[1][y]] ],
-            # ],
-            'bottom_rotated': [  # doesn't rotate for some reason
-                lambda vertices: [ vertices[0],                               [vertices[1][x], middle_dim(vertices, y)] ],
-                lambda vertices: [ [vertices[1][x], middle_dim(vertices, y)], [vertices[0][x], vertices[1][y]] ],
-            ]
+            'straight': [
+                lambda vertices: [ vertices[0],                          vertices[1],                          [x(vertices[2]), middle_y(vertices)], [x(vertices[3]), middle_y(vertices)] ],
+                lambda vertices: [ [x(vertices[0]), middle_y(vertices)], [x(vertices[1]), middle_y(vertices)], vertices[2],                          vertices[3] ],
+            ],
+        }
+
+        options['translate'] = {
+            'rotate_90_all': [rotator(1)] * 2,
+            'rotate_270_all': [rotator(3)] * 2,
+            'rotate_90_top': [rotator(1), same],
+            # TODO: combination with flip?
         }
 
         options['color'] = {

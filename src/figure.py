@@ -19,6 +19,8 @@ class Figure:
         for i in range(self.props.division):
             # get the properties of the subfigure
             next_polygon = self.props.get_next('polygon', i, self.polygon)
+            if 'translate' in self.props.next:
+                next_polygon = self.props.get_next('translate', i, next_polygon)
             next_level = self.props.get_next('level', i, self.level)
 
             next_color = self.color

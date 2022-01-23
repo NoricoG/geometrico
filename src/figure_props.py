@@ -18,6 +18,7 @@ class FigureProps:
         self.coloring = generic_props.coloring
         self.change_intermediate_color = generic_props.change_intermediate_color
         self.change_final_color = generic_props.change_final_color
+        self.placing = self.next['placing']
 
         # metadata
         self.shape_name = shape_name
@@ -28,6 +29,9 @@ class FigureProps:
         parts = []
         parts.append(f'{self.shape_name[0]}{self.shape_name[-1]}')
         parts.append(self.choices['polygon'])
+        parts.append(self.choices['placing'])
+        if 'translate' in self.choices:
+            parts.append(self.choices['translate'])
         parts.append(self.choices['level'])
         parts.append('  ▬  ')
         parts.append(self.polygon_summary)
@@ -47,7 +51,33 @@ class FigureProps:
 
     # rough estimate of amount of recursion, used to avoid long runtimes
     # not accurate at low numbers, but that isn't important
-    def estimate_polygons(self, start_level):
+    def estimate_polygons(self, start_level, repeat=1):
+        polygon_count = max([self.estimate_polygons_once(start_level) for _ in range(repeat)])
+        # TODO: put max in summary when repeat > 1
+        return polygon_count
+
+    def estimate_polygons_once(self, start_level):
+        depths = self.get_depths(start_level)
+        max_depth = max(depths)
+        total_weighted_depths = sum(x / max_depth for x in depths)
+        polygon_count = int(total_weighted_depths ** max_depth)
+
+        alternative = False
+        alternative_count = round(total_weighted_depths * max_depth)
+        if alternative_count > polygon_count:
+            polygon_count = alternative_count
+            alternative = True
+
+        repetition = 1
+        if 'translate' in self.choices:
+            repetition = len(self.placing)
+        polygon_count = repetition * polygon_count
+
+        self.set_polygon_summary(repetition, total_weighted_depths, max_depth, polygon_count, start_level, alternative)
+        print(self.polygon_summary)
+        return polygon_count
+
+    def get_depths(self, start_level):
         depths = []
         for i in range(self.division):
             depth = 0
@@ -57,15 +87,22 @@ class FigureProps:
                 depth += 1
             depths.append(depth)
         # print(depths)
+        return depths
 
-        max_depth = max(depths)
-        total_weighted_depths = sum(x / max_depth for x in depths)
-        polygon_count = int(total_weighted_depths ** max_depth)
-        print(f'{total_weighted_depths:.2f}^{max_depth} = {polygon_count:,} polygons')
-        self.set_polygon_summary(total_weighted_depths, max_depth, polygon_count)
-        return polygon_count
 
-    def set_polygon_summary(self, base, depth, count):
+    def set_polygon_summary(self, repetition, base, depth, count, start_level, alternative):
         count = extra_round(count, 2)
-        self.polygon_summary = f'{base:.1f}^{depth}={count:,}'
+        operation = '*' if alternative else '^'
+        self.polygon_summary = f'{base:.1f}{operation}{depth}={count:,}'
+        if repetition != 1:
+            self.polygon_summary = f'{repetition}*{self.polygon_summary}'
+        if start_level != depth:
+            self.polygon_summary = f'{self.polygon_summary} ({start_level})'
 
+
+# Properties that each shape can have
+class GenericProps:
+    def __init__(self, coloring, change_intermediate_color, change_final_color):
+        self.coloring = coloring
+        self.change_intermediate_color = change_intermediate_color
+        self.change_final_color = change_final_color
