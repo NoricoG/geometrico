@@ -207,8 +207,8 @@ function sketch(p: p5) {
     p.frameRate(60)
 
     animation = new SizeChangingNestedSquaresAnimation(p, canvasSize);
-    // animation = new SizeChangingNestedCirclesAnimation(p, canvasSize);
-    // animation = new RotatingNestedSquaresAnimation(p, canvasSize);
+    animation = new SizeChangingNestedCirclesAnimation(p, canvasSize);
+    animation = new RotatingNestedSquaresAnimation(p, canvasSize);
   };
 
   p.draw = function draw(): void {
