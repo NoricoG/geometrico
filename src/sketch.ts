@@ -206,9 +206,13 @@ function sketch(p: p5) {
 
     p.frameRate(60)
 
-    animation = new SizeChangingNestedSquaresAnimation(p, canvasSize);
-    animation = new SizeChangingNestedCirclesAnimation(p, canvasSize);
-    animation = new RotatingNestedSquaresAnimation(p, canvasSize);
+    const animations = [
+      new SizeChangingNestedSquaresAnimation(p, canvasSize),
+      new SizeChangingNestedCirclesAnimation(p, canvasSize),
+      new RotatingNestedSquaresAnimation(p, canvasSize)
+    ];
+    const randomIndex = Math.floor(Math.random() * animations.length);
+    animation = animations[randomIndex];
   };
 
   p.draw = function draw(): void {
