@@ -13,10 +13,10 @@ class SizeChangingNestedSquaresAnimation extends Animation {
   private maxThickness = 50;
   private currentThickness = this.maxThickness;
   private thicknessIncreasing = false;
-  private thicknessDelta = 0.001;
+  private thicknessDelta = 0.01;
 
   private minSquareSize = 1;
-  private iterationLimit = 100;
+  private iterationLimit = 500;
 
   constructor(p: p5, canvasSize: number) {
     super();
@@ -73,7 +73,7 @@ class SizeChangingNestedCirclesAnimation extends Animation {
   private thicknessDelta = 0.001;
 
   private minSquareSize = 1;
-  private iterationLimit = 100;
+  private iterationLimit = 500;
 
   constructor(p: p5, canvasSize: number) {
     super();
@@ -124,13 +124,14 @@ class RotatingNestedSquaresAnimation extends Animation {
   private canvasSize: number;
   private middle: number;
 
-  private minOffset = 0.02;
-  private maxOffset = 0.98;
+  private minOffset = 0.01;
+  private maxOffset = 0.99;
   private currentOffset = this.minOffset
   private offsetIncreasing = true;
+  private offsetDelta = 0.0001;
 
   private minSquareSize = 1;
-  private iterationLimit = 100;
+  private iterationLimit = 200;
 
   constructor(p: p5, canvasSize: number) {
     super();
@@ -141,6 +142,8 @@ class RotatingNestedSquaresAnimation extends Animation {
   }
 
   draw(p: p5, deltaTime: number): void {
+    this.colorIndex = 1;
+
     if (this.currentOffset <= this.minOffset) {
       this.offsetIncreasing = true
     } else if (this.currentOffset >= this.maxOffset) {
@@ -148,9 +151,9 @@ class RotatingNestedSquaresAnimation extends Animation {
     }
 
     if (this.offsetIncreasing) {
-      this.currentOffset += deltaTime * 0.0005;
+      this.currentOffset += deltaTime * this.offsetDelta;
     } else {
-      this.currentOffset -= deltaTime * 0.0005;
+      this.currentOffset -= deltaTime * this.offsetDelta;
     }
 
     var x1 = this.middle - this.middle;
@@ -163,7 +166,7 @@ class RotatingNestedSquaresAnimation extends Animation {
     var y4 = this.middle + this.middle;
 
     var iterations = 0;
-    while (this.colorIndex == 0 || ((Math.abs(x1 - this.middle) > this.minSquareSize || Math.abs(y1 - this.middle) > this.minSquareSize) && iterations < this.iterationLimit)) {
+    while (this.colorIndex == 1 || ((Math.abs(x1 - this.middle) > this.minSquareSize || Math.abs(y1 - this.middle) > this.minSquareSize) && iterations < this.iterationLimit)) {
       iterations += 1;
 
       if (this.colorIndex == this.colors.length - 1) {
