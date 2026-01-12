@@ -19,8 +19,10 @@ abstract class AngleAnimation extends Composition {
     animatedOffset: AnimatedParameter;
 
     colors: ListColors;
-    canvasSize: number;
-    middle: number;
+    canvasWidth: number;
+    canvasHeight: number;
+    middleX: number;
+    middleY: number;
 
     minSquareSize = 1;
 
@@ -35,23 +37,26 @@ abstract class AngleAnimation extends Composition {
 
         this.colors = new RandomListColors(p);
 
-        const canvasSize = Math.min(p.windowWidth, p.windowHeight);
-        p.createCanvas(canvasSize, canvasSize);
-        p.background(255);
+        const fullScreen = Math.random() < 0.5;
+        if (fullScreen) {
+            this.canvasWidth = p.windowWidth;
+            this.canvasHeight = p.windowHeight;
+        } else {
+            const canvasSize = Math.min(p.windowWidth, p.windowHeight);
+            this.canvasWidth = canvasSize;
+            this.canvasHeight = canvasSize;
+        }
+        this.middleX = this.canvasWidth / 2;
+        this.middleY = this.canvasHeight / 2;
 
-        this.canvasSize = canvasSize;
-        this.middle = this.canvasSize / 2;
+        p.createCanvas(this.canvasWidth, this.canvasHeight);
+        p.background(255);
 
         this.animatedOffset = new AnimatedAngleParameter();
     }
 
     prepareDraw(deltaTime: number): void {
         this.offset = this.animatedOffset.increment(deltaTime);
-        this.invOffset = 1 - this.offset;
-    }
-
-    set(offset: number): void {
-        this.offset = offset;
         this.invOffset = 1 - this.offset;
     }
 }
@@ -68,12 +73,12 @@ export class RotatingNestedSquaresAnimation extends AngleAnimation {
 
         var x1 = 0;
         var y1 = 0;
-        var x2 = this.canvasSize;
+        var x2 = this.canvasWidth;
         var y2 = 0;
-        var x3 = this.canvasSize;
-        var y3 = this.canvasSize;
+        var x3 = this.canvasWidth;
+        var y3 = this.canvasHeight;
         var x4 = 0;
-        var y4 = this.canvasSize;
+        var y4 = this.canvasHeight;
 
         this.drawAndNest(p, this.iterationLimit, this.colors, x1, y1, x2, y2, x3, y3, x4, y4);
     }
@@ -87,7 +92,7 @@ export class RotatingNestedSquaresAnimation extends AngleAnimation {
             if (remainingIterations <= 0) {
                 return;
             }
-            if (Math.abs(x1 - this.middle) <= this.minSquareSize && Math.abs(y1 - this.middle) <= this.minSquareSize) {
+            if (Math.abs(x1 - this.middleX) <= this.minSquareSize && Math.abs(y1 - this.middleY) <= this.minSquareSize) {
                 return;
             }
         }
@@ -114,12 +119,11 @@ export class RotatingNestedTrianglesAnimation extends AngleAnimation {
         this.prepareDraw(deltaTime);
 
         var x1 = 0;
-        var y1 = this.canvasSize;
-        var x2 = this.middle;
+        var y1 = this.canvasHeight;
+        var x2 = this.middleX;
         var y2 = 0;
-        var x3 = this.canvasSize;
-        var y3 = this.canvasSize;
-
+        var x3 = this.canvasWidth;
+        var y3 = this.canvasHeight;
         this.drawAndNest(p, this.iterationLimit, this.colors, x1, y1, x2, y2, x3, y3);
     }
 
@@ -132,7 +136,7 @@ export class RotatingNestedTrianglesAnimation extends AngleAnimation {
             if (remainingIterations <= 0) {
                 return;
             }
-            if (Math.abs(x1 - this.middle) <= this.minSquareSize && Math.abs(y1 - this.middle) <= this.minSquareSize) {
+            if (Math.abs(x1 - this.middleX) <= this.minSquareSize && Math.abs(y1 - this.middleY) <= this.minSquareSize) {
                 return;
             }
         }
@@ -153,26 +157,27 @@ export class Rotating2Triangle4Animation extends AngleAnimation {
     constructor(p: p5) {
         super(p);
 
-        this.iterationLimit = 8;
+        // lower because of branch factor 4
+        this.iterationLimit = 9;
     }
 
     draw(p: p5, deltaTime: number): void {
         this.prepareDraw(deltaTime);
 
         var x1 = 0;
-        var y1 = this.canvasSize;
+        var y1 = this.canvasHeight;
         var x2 = 0;
         var y2 = 0;
-        var x3 = this.canvasSize;
-        var y3 = this.canvasSize;
+        var x3 = this.canvasWidth;
+        var y3 = this.canvasHeight;
         this.drawAndNest(p, this.iterationLimit, this.colors.initial(), x1, x2, x3, y1, y2, y3);
 
-        var x1 = this.canvasSize;
+        var x1 = this.canvasWidth;
         var y1 = 0;
         var x2 = 0;
         var y2 = 0;
-        var x3 = this.canvasSize;
-        var y3 = this.canvasSize;
+        var x3 = this.canvasWidth;
+        var y3 = this.canvasHeight;
         this.drawAndNest(p, this.iterationLimit, this.colors.initial().next(), x1, x2, x3, y1, y2, y3);
     }
 
@@ -237,12 +242,12 @@ export class MarginSquaresAngleAnimation extends AngleAnimation {
 
         var x1 = 0;
         var y1 = 0;
-        var x2 = this.canvasSize;
+        var x2 = this.canvasWidth;
         var y2 = 0;
-        var x3 = this.canvasSize;
-        var y3 = this.canvasSize;
+        var x3 = this.canvasWidth;
+        var y3 = this.canvasHeight;
         var x4 = 0;
-        var y4 = this.canvasSize;
+        var y4 = this.canvasHeight;
         this.drawAndNest(p, this.iterationLimit, this.colors, x1, y1, x2, y2, x3, y3, x4, y4);
 
     }

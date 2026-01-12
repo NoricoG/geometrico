@@ -16,6 +16,8 @@ export class Triangle4Composition extends Composition {
 
     colors: ListColors;
 
+    minSize = 5;
+
     constructor(p: p5) {
         super();
 
@@ -52,7 +54,7 @@ export class Triangle4Composition extends Composition {
         p.fill(colors.color());
         p.triangle(x1, y1, x2, y2, x3, y3);
 
-        if (iterations <= 0) {
+        if (iterations <= 0 || (Math.abs(x1 - x2) <= this.minSize && Math.abs(y1 - y2) <= this.minSize)) {
             return;
         }
 
