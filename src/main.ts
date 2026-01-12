@@ -1,19 +1,22 @@
 import p5 from "p5";
 
-import { SquareSizeAnimation, CircleSizeAnimation, TriangleSizeAnimation } from "./compositions/nestedSize";
-import { RotatingNestedSquaresAnimation, RotatingNestedTrianglesAnimation, Rotating2Triangle4Animation, MarginSquaresAngleAnimation } from "./compositions/nestedAngle";
-import { Animation, Composition } from "./compositions/base";
+import { SquareSizeAnimation, CircleSizeAnimation, TriangleSizeAnimation } from "./scenes/nestedSize";
+import { RotatingNestedSquaresAnimation, RotatingNestedTrianglesAnimation, Rotating2Triangle4Animation, MarginSquaresAngleAnimation } from "./scenes/nestedAngle";
+// import { DummyComposition, HeavyComposition } from "./scenes/dummy";
+import { Animation, Composition } from "./scenes/base";
 
 
 function sketch(p: p5) {
-  var composition: Composition;
-  var animate: boolean;
+  var scene: Composition | Animation;
+
   var pause = false;
   var firstFrameAfterPause = false;
 
   p.setup = function setup(): void {
 
-    const compositions = [
+    const scenes = [
+      // DummyComposition,
+      // HeavyComposition,
       SquareSizeAnimation,
       CircleSizeAnimation,
       TriangleSizeAnimation,
@@ -22,37 +25,33 @@ function sketch(p: p5) {
       Rotating2Triangle4Animation,
       MarginSquaresAngleAnimation,
     ];
-    const randomIndex = Math.floor(Math.random() * compositions.length);
-    composition = new compositions[randomIndex](p);
-
-    animate = false;
-    if (composition instanceof Animation) {
-      if (Math.random() < 0.7) {
-        animate = true;
-      } else {
-        composition.iterationLimit *= 2;
-      }
-    }
+    const randomIndex = Math.floor(Math.random() * scenes.length);
+    scene = new scenes[randomIndex](p);
 
     p.noStroke();
 
-    if (animate) {
-      p.frameRate(60)
-    } else {
-      composition.drawComposition(p);
-      p.noLoop();
-    }
+    p.frameRate(60)
+
+    p.text("Loading...", 100, 100);
+
   };
 
   p.draw = function draw(): void {
-    if (animate && composition instanceof Animation) {
-      // prevent large deltaTime after pausing
-      if (firstFrameAfterPause) {
-        firstFrameAfterPause = false;
-        return;
-      }
+    // prevent large deltaTime after pausing
+    if (firstFrameAfterPause) {
+      firstFrameAfterPause = false;
+      return;
+    }
 
-      composition.drawFrame(p, p.deltaTime);
+    // only draw when the window is focused
+    if (!p.focused) {
+      return;
+    }
+
+    scene.draw(p, p.deltaTime);
+
+    if (scene instanceof Composition) {
+      p.noLoop();
     }
   };
 
