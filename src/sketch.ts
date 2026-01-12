@@ -16,10 +16,10 @@ function sketch(p: p5) {
 
     const animations = [
       new SquareSizeAnimation(p, canvasSize),
-      // new CircleSizeAnimation(p, canvasSize),
-      // new RotatingNestedSquaresAnimation(p, canvasSize),
-      // new RotatingNestedTrianglesAnimation(p, canvasSize),
-      // new RotatingNestedHalvedSquaresAnimation(p, canvasSize)
+      new CircleSizeAnimation(p, canvasSize),
+      new RotatingNestedSquaresAnimation(p, canvasSize),
+      new RotatingNestedTrianglesAnimation(p, canvasSize),
+      new RotatingNestedHalvedSquaresAnimation(p, canvasSize)
     ];
     const randomIndex = Math.floor(Math.random() * animations.length);
     animation = animations[randomIndex];
