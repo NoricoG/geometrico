@@ -2,44 +2,22 @@ import p5 from "p5";
 
 import { Composition } from "./base";
 
-export class DummyComposition extends Composition {
-    iterationLimit = 100;
+export class DotsComposition extends Composition {
+    animated = false;
 
-    constructor(p: p5) {
-        super();
-        const canvasSize = Math.min(p.windowWidth, p.windowHeight);
-        p.createCanvas(canvasSize, canvasSize);
-    }
-
-    draw(p: p5): void {
-        p.background(200);
-
-        this.drawNext(p, this.iterationLimit);
-    }
-
-    drawNext(p: p5, iterations: number): void {
-        if (iterations <= 0) {
-            return;
-        }
-
-        console.log(iterations);
-
-        p.text(iterations.toString(), 10 * iterations, 10 * iterations);
-
-        this.drawNext(p, iterations - 1);
-    }
-}
-
-export class HeavyComposition extends Composition {
-    iterationLimit = 14;
+    iterationLimit = 13;
     branchingFactor = 2;
 
     constructor(p: p5) {
         super();
+
         const canvasSize = Math.min(p.windowWidth, p.windowHeight);
         p.createCanvas(canvasSize, canvasSize);
+
+        p.textSize(32);
+        p.text("Loading...", 100, 100);
     }
-    draw(p: p5): void {
+    draw(p: p5, _: number): void {
         p.background(200);
 
         this.drawNext(p, this.iterationLimit);

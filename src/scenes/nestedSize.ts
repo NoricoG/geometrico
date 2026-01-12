@@ -1,9 +1,23 @@
 import p5 from "p5";
 
-import { Animation } from "./base";
+import { Composition } from "./base";
+import { AnimatedParameter } from "./parameter";
 import { ListColors, RandomListColors } from "../colors";
 
-abstract class SizeComposition {
+export class AnimatedSizeParameter extends AnimatedParameter {
+    constructor() {
+        const minValue = 15;
+        const maxValue = 50;
+        const bouncing = false;
+        const speed = Math.random() * 0.001 + 0.001;
+        super(minValue, maxValue, bouncing, speed);
+    }
+}
+
+abstract class SizeAnimation extends Composition {
+    animated = true;
+    animatedSize: AnimatedParameter;
+
     colors: ListColors;
     canvasWidth: number;
     canvasHeight: number;
@@ -18,21 +32,24 @@ abstract class SizeComposition {
     iterationLimit = 500;
 
     constructor(p: p5) {
+        super();
+
         this.colors = new RandomListColors(p);
 
         this.canvasWidth = p.windowWidth;
         this.canvasHeight = p.windowHeight;
         p.createCanvas(this.canvasWidth, this.canvasHeight);
+        p.background(255);
 
         this.middleX = p.windowWidth / 2;
         this.middleY = p.windowHeight / 2;
+
+        this.animatedSize = new AnimatedSizeParameter();
     }
 
-    set(currentThickness: number) {
-        this.currentThickness = currentThickness;
-    }
+    draw(p: p5, deltaTime: number): void {
+        this.currentThickness = this.animatedSize.increment(deltaTime);
 
-    draw(p: p5): void {
         var size = this.initialSize;
 
         var iterations = 0;
@@ -52,7 +69,7 @@ abstract class SizeComposition {
     abstract drawShape(p: p5, size: number): void;
 }
 
-class SquareSizeComposition extends SizeComposition {
+export class SquareSizeAnimation extends SizeAnimation {
     initialSize: number;
 
     constructor(p: p5) {
@@ -71,7 +88,7 @@ class SquareSizeComposition extends SizeComposition {
     }
 }
 
-export class CircleSizeComposition extends SizeComposition {
+export class CircleSizeAnimation extends SizeAnimation {
     initialSize: number;
 
     constructor(p: p5) {
@@ -85,7 +102,7 @@ export class CircleSizeComposition extends SizeComposition {
     }
 }
 
-class TriangleSizeComposition extends SizeComposition {
+export class TriangleSizeAnimation extends SizeAnimation {
     initialSize: number;
 
     constructor(p: p5) {
@@ -101,63 +118,5 @@ class TriangleSizeComposition extends SizeComposition {
             this.middleX - size / 2, this.middleY + (1 / 3) * height,
             this.middleX + size / 2, this.middleY + (1 / 3) * height
         )
-    }
-}
-
-abstract class SizeAnimation extends Animation {
-    abstract composition: SizeComposition;
-
-    minThickness = 15;
-    maxThickness = 50;
-    currentThickness = Math.random() * (this.maxThickness - this.minThickness) + this.minThickness;
-    thicknessIncreasing = Math.random() < 0.5;
-    thicknessDelta = Math.random() * 0.001 + 0.001;
-
-    draw(p: p5, deltaTime: number): void {
-        if (this.currentThickness <= this.minThickness) {
-            this.thicknessIncreasing = true
-        } else if (this.currentThickness >= this.maxThickness) {
-            this.thicknessIncreasing = false
-        }
-
-        if (this.thicknessIncreasing) {
-            this.currentThickness += deltaTime * this.thicknessDelta;
-        } else {
-            this.currentThickness -= deltaTime * this.thicknessDelta;
-        }
-
-        this.composition.set(this.currentThickness);
-        this.composition.draw(p);
-    }
-}
-
-export class SquareSizeAnimation extends SizeAnimation {
-    composition: SizeComposition;
-
-    constructor(p: p5) {
-        super();
-
-        this.composition = new SquareSizeComposition(p);
-    }
-}
-
-export class CircleSizeAnimation extends SizeAnimation {
-    composition: SizeComposition;
-
-    constructor(p: p5) {
-        super();
-
-        this.composition = new CircleSizeComposition(p);
-    }
-
-}
-
-export class TriangleSizeAnimation extends SizeAnimation {
-    composition: SizeComposition;
-
-    constructor(p: p5) {
-        super();
-
-        this.composition = new TriangleSizeComposition(p);
     }
 }

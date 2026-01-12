@@ -1,9 +1,23 @@
 import p5 from "p5";
 
-import { Animation, Composition } from "./base";
+import { Composition } from "./base";
+import { AnimatedParameter } from "./parameter";
 import { ListColors, RandomListColors } from "../colors";
 
-abstract class AngleComposition extends Composition {
+export class AnimatedAngleParameter extends AnimatedParameter {
+    constructor() {
+        const minValue = 0.005;
+        const maxValue = 1 - minValue;
+        const bouncing = Math.random() < 0.5;
+        const speed = Math.random() * 0.0001 + 0.0001;
+        super(minValue, maxValue, bouncing, speed);
+    }
+}
+
+abstract class AngleAnimation extends Composition {
+    animated = true;
+    animatedOffset: AnimatedParameter;
+
     colors: ListColors;
     canvasSize: number;
     middle: number;
@@ -23,8 +37,17 @@ abstract class AngleComposition extends Composition {
 
         const canvasSize = Math.min(p.windowWidth, p.windowHeight);
         p.createCanvas(canvasSize, canvasSize);
+        p.background(255);
+
         this.canvasSize = canvasSize;
         this.middle = this.canvasSize / 2;
+
+        this.animatedOffset = new AnimatedAngleParameter();
+    }
+
+    prepareDraw(deltaTime: number): void {
+        this.offset = this.animatedOffset.increment(deltaTime);
+        this.invOffset = 1 - this.offset;
     }
 
     set(offset: number): void {
@@ -33,12 +56,14 @@ abstract class AngleComposition extends Composition {
     }
 }
 
-class RotatingNestedSquaresComposition extends AngleComposition {
+export class RotatingNestedSquaresAnimation extends AngleAnimation {
     constructor(p: p5) {
         super(p);
     }
 
-    draw(p: p5): void {
+    draw(p: p5, deltaTime: number): void {
+        this.prepareDraw(deltaTime);
+
         this.colors = this.colors.initial();
 
         var x1 = 0;
@@ -80,12 +105,14 @@ class RotatingNestedSquaresComposition extends AngleComposition {
     }
 }
 
-export class RotatingNestedTrianglesComposition extends AngleComposition {
+export class RotatingNestedTrianglesAnimation extends AngleAnimation {
     constructor(p: p5) {
         super(p);
     }
 
-    draw(p: p5): void {
+    draw(p: p5, deltaTime: number): void {
+        this.prepareDraw(deltaTime);
+
         var x1 = 0;
         var y1 = this.canvasSize;
         var x2 = this.middle;
@@ -121,7 +148,7 @@ export class RotatingNestedTrianglesComposition extends AngleComposition {
     }
 }
 
-export class Rotating2Triangle4Composition extends AngleComposition {
+export class Rotating2Triangle4Animation extends AngleAnimation {
 
     constructor(p: p5) {
         super(p);
@@ -129,7 +156,9 @@ export class Rotating2Triangle4Composition extends AngleComposition {
         this.iterationLimit = 8;
     }
 
-    draw(p: p5): void {
+    draw(p: p5, deltaTime: number): void {
+        this.prepareDraw(deltaTime);
+
         var x1 = 0;
         var y1 = this.canvasSize;
         var x2 = 0;
@@ -195,7 +224,7 @@ export class Rotating2Triangle4Composition extends AngleComposition {
 
 
 
-export class MarginSquaresAngleComposition extends AngleComposition {
+export class MarginSquaresAngleAnimation extends AngleAnimation {
     // to go bigger than 1.4 we need more iterations
     margin = 1 + Math.random() * 0.4;
 
@@ -203,7 +232,9 @@ export class MarginSquaresAngleComposition extends AngleComposition {
         super(p);
     }
 
-    draw(p: p5): void {
+    draw(p: p5, deltaTime: number): void {
+        this.prepareDraw(deltaTime);
+
         var x1 = 0;
         var y1 = 0;
         var x2 = this.canvasSize;
@@ -257,82 +288,5 @@ export class MarginSquaresAngleComposition extends AngleComposition {
         y4 = centerY + this.margin * (y4 - centerY);
 
         this.drawAndNest(p, remainingIterations - 1, colors.next(), x1, y1, x2, y2, x3, y3, x4, y4);
-    }
-}
-
-abstract class AngleAnimation extends Animation {
-    abstract composition: AngleComposition;;
-
-    minOffset = 0.005;
-    maxOffset = 1 - this.minOffset;
-    offset = Math.random() * (this.maxOffset - this.minOffset) + this.minOffset;
-    offsetIncreasing = Math.random() < 0.5;
-    offsetDelta = Math.random() * 0.0001 + 0.0001;
-    offsetBounce = Math.random() < 0.5;
-
-    constructor() {
-        super();
-    }
-
-    draw(p: p5, deltaTime: number): void {
-        if (this.offset <= this.minOffset) {
-            if (this.offsetBounce) {
-                this.offsetIncreasing = true
-            } else {
-                this.offset = this.maxOffset;
-            }
-        } else if (this.offset >= this.maxOffset) {
-            if (this.offsetBounce) {
-                this.offsetIncreasing = false
-            } else {
-                this.offset = this.minOffset;
-            }
-        }
-
-        if (this.offsetIncreasing) {
-            this.offset += deltaTime * this.offsetDelta;
-        } else {
-            this.offset -= deltaTime * this.offsetDelta;
-        }
-
-        this.composition.set(this.offset);
-        this.composition.draw(p);
-    }
-
-}
-
-export class RotatingNestedSquaresAnimation extends AngleAnimation {
-    composition: AngleComposition;
-
-    constructor(p: p5) {
-        super();
-        this.composition = new RotatingNestedSquaresComposition(p);
-    }
-}
-
-export class RotatingNestedTrianglesAnimation extends AngleAnimation {
-    composition: AngleComposition;
-
-    constructor(p: p5) {
-        super();
-        this.composition = new RotatingNestedSquaresComposition(p);
-    }
-}
-
-export class Rotating2Triangle4Animation extends AngleAnimation {
-    composition: AngleComposition;
-
-    constructor(p: p5) {
-        super();
-        this.composition = new Rotating2Triangle4Composition(p);
-    }
-}
-
-export class MarginSquaresAngleAnimation extends AngleAnimation {
-    composition: AngleComposition;
-
-    constructor(p: p5) {
-        super();
-        this.composition = new MarginSquaresAngleComposition(p);
     }
 }

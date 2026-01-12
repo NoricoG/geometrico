@@ -1,22 +1,25 @@
 import p5 from "p5";
 
-import { SquareSizeAnimation, CircleSizeAnimation, TriangleSizeAnimation } from "./scenes/nestedSize";
+
+import { DotsComposition } from "./scenes/dots";
 import { RotatingNestedSquaresAnimation, RotatingNestedTrianglesAnimation, Rotating2Triangle4Animation, MarginSquaresAngleAnimation } from "./scenes/nestedAngle";
-// import { DummyComposition, HeavyComposition } from "./scenes/dummy";
-import { Animation, Composition } from "./scenes/base";
+import { SquareSizeAnimation, CircleSizeAnimation, TriangleSizeAnimation } from "./scenes/nestedSize";
+
+import { Triangle4Composition } from "./scenes/triangle4";
+import { Composition } from "./scenes/base";
 
 
 function sketch(p: p5) {
-  var scene: Composition | Animation;
+  var composition: Composition;
 
   var pause = false;
   var firstFrameAfterPause = false;
 
   p.setup = function setup(): void {
 
-    const scenes = [
-      // DummyComposition,
-      // HeavyComposition,
+    const compositions = [
+      DotsComposition,
+      Triangle4Composition,
       SquareSizeAnimation,
       CircleSizeAnimation,
       TriangleSizeAnimation,
@@ -25,15 +28,12 @@ function sketch(p: p5) {
       Rotating2Triangle4Animation,
       MarginSquaresAngleAnimation,
     ];
-    const randomIndex = Math.floor(Math.random() * scenes.length);
-    scene = new scenes[randomIndex](p);
+    const randomIndex = Math.floor(Math.random() * compositions.length);
+    composition = new compositions[randomIndex](p);
 
     p.noStroke();
 
     p.frameRate(60)
-
-    p.text("Loading...", 100, 100);
-
   };
 
   p.draw = function draw(): void {
@@ -44,13 +44,13 @@ function sketch(p: p5) {
     }
 
     // only draw when the window is focused
-    if (!p.focused) {
+    if (composition.animated && !p.focused) {
       return;
     }
 
-    scene.draw(p, p.deltaTime);
+    composition.draw(p, p.deltaTime);
 
-    if (scene instanceof Composition) {
+    if (!composition.animated) {
       p.noLoop();
     }
   };
