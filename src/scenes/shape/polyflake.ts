@@ -11,6 +11,9 @@ export class PolyflakeComposition extends Composition {
     extraCorners = Math.round(Math.random() * 2)
     corners = 5 + this.extraCorners;
 
+    minRadiusFactor = 0.35 - this.extraCorners * 0.05;
+    radiusFactor = Math.random() * (0.5 - this.minRadiusFactor) + this.minRadiusFactor;
+
     iterationLimit = Math.round(Math.random() * (3 - this.extraCorners) + 4);
     branchingFactor = this.corners;
 
@@ -64,7 +67,7 @@ export class PolyflakeComposition extends Composition {
             return;
         }
 
-        const newRadius = radius * 0.4;
+        const newRadius = radius * this.radiusFactor;
 
         for (let i = 0; i < points.length; i++) {
             this.drawNext(p, iterations - 1, colors.next(), newRadius, false, points[i].x, points[i].y);
