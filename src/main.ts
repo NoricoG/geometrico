@@ -4,7 +4,7 @@ import { RotatingNestedSquaresAnimation, RotatingNestedTrianglesAnimation, Rotat
 import { SquareSizeAnimation, CircleSizeAnimation, TriangleSizeAnimation } from "./scenes/parameter/size";
 
 import { Circle4Composition } from "./scenes/shape/circle4";
-import { PentaflakeComposition } from "./scenes/shape/pentaflake";
+import { PolyflakeComposition } from "./scenes/shape/polyflake";
 import { Rectangle4Composition } from "./scenes/shape/reactangle4";
 import { Triangle2Composition } from "./scenes/shape/triangle2";
 import { Triangle3Composition } from "./scenes/shape/triangle3";
@@ -27,7 +27,8 @@ function sketch(p: p5) {
 
     const compositions = [
       Circle4Composition,
-      PentaflakeComposition,
+      PolyflakeComposition, // twice because of variability
+      PolyflakeComposition, // twice because of variability
       Rectangle4Composition,
       Triangle2Composition,
       Triangle3Composition,

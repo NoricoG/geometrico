@@ -4,11 +4,15 @@ import { Colors, ListColors, RandomListColors } from "../../colors";
 import { Composition } from "../base";
 
 
-export class PentaflakeComposition extends Composition {
+export class PolyflakeComposition extends Composition {
     animated = false;
 
-    iterationLimit = Math.round(Math.random() * 2 + 4);
-    branchingFactor = 6;
+    // 5-7
+    extraCorners = Math.round(Math.random() * 2)
+    corners = 5 + this.extraCorners;
+
+    iterationLimit = Math.round(Math.random() * (3 - this.extraCorners) + 4);
+    branchingFactor = this.corners;
 
     colors: ListColors;
 
@@ -39,8 +43,8 @@ export class PentaflakeComposition extends Composition {
 
     drawNext(p: p5, iterations: number, colors: Colors, radius: number, skipDraw: boolean, x: number, y: number): void {
         const points: Array<{ x: number, y: number }> = [];
-        const angleStep = (2 * Math.PI) / 5;
-        for (let i = 0; i < 5; i++) {
+        const angleStep = (2 * Math.PI) / this.corners;
+        for (let i = 0; i < this.corners; i++) {
             const angle = -Math.PI / 2 + i * angleStep;
             const nextX = x + radius * Math.cos(angle);
             const nextY = y + radius * Math.sin(angle);
