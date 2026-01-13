@@ -270,11 +270,22 @@ export class Rotating4Triangle4Animation extends Rotating2Triangle4Animation {
 }
 
 export class MarginSquaresAngleAnimation extends AngleAnimation {
-    // to go bigger than 1.4 we need more iterations
-    margin = 1 + Math.random() * 0.4;
+    iterationLimit = 300;
+
+    margin = 1 + Math.random() * 0.9;
 
     constructor(p: p5) {
         super(p);
+
+        // minValue based on observed offsets with iterationLimit 300
+        const minValue = Math.max(0.0001, 0.75 * this.margin - 1);
+        const maxValue = 1 - minValue;
+
+        // prevent visible jump
+        const bouncing = minValue < 0.02 && Math.random() < 0.8;
+        const speed = Math.random() * 0.0001 + 0.0001;
+
+        this.animatedOffset = new AnimatedParameter(minValue, maxValue, bouncing, speed);
     }
 
     draw(p: p5, deltaTime: number): void {
@@ -295,6 +306,12 @@ export class MarginSquaresAngleAnimation extends AngleAnimation {
     drawAndNest(p: p5, remainingIterations: number, colors: ListColors, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number): void {
         p.fill(colors.color())
         p.quad(x1, y1, x2, y2, x3, y3, x4, y4)
+
+        const maxSize = Math.max(x1, x2, x3, x4, y1, y2, y3, y4);
+        const minSize = Math.min(x1, x2, x3, x4, y1, y2, y3, y4);
+        if (maxSize - minSize < this.minSquareSize) {
+            return;
+        }
 
         if (remainingIterations <= 0) {
             return;

@@ -11,7 +11,7 @@ export abstract class Colors {
 }
 
 export class ListColors extends Colors {
-    protected colors: p5.Color[] = [];
+    colors: p5.Color[] = [];
     currentIndex = 0;
 
     constructor(colors: p5.Color[], currentIndex?: number) {
