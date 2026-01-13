@@ -1,18 +1,14 @@
 import p5 from "p5";
 
-import { Composition } from "./base";
-import { Colors, ListColors, RandomListColors } from "../colors";
+import { Colors, ListColors, RandomListColors } from "../../colors";
+import { Composition } from "../base";
+
 
 export class Triangle4Composition extends Composition {
     animated = false;
 
-    iterationLimit = Math.random() * 3 + 5;
+    iterationLimit = Math.round(Math.random() * 3 + 15);
     branchingFactor = 4;
-    leaves = Math.pow(this.branchingFactor, this.iterationLimit);
-
-    canvasSize: number;
-    middleX: number;
-    middleY: number;
 
     colors: ListColors;
 
@@ -21,28 +17,19 @@ export class Triangle4Composition extends Composition {
     constructor(p: p5) {
         super();
 
-        this.canvasSize = Math.min(p.windowWidth, p.windowHeight);
-        p.createCanvas(this.canvasSize, this.canvasSize);
+        this.createCanvas(p, true);
 
-        this.middleX = this.canvasSize / 2;
-        this.middleY = this.canvasSize / 2;
-
-        if (this.leaves > 100000) {
-            p.textSize(32);
-            p.text("Loading...", 100, 100);
-        }
-
-        this.colors = new RandomListColors(p);
+        this.colors = RandomListColors.getRandom(p);
     }
 
     draw(p: p5, _: number): void {
         p.background(255);
 
-        const halfHeight = (this.canvasSize / 2) * Math.sqrt(3) / 2;
+        const halfHeight = (this.canvasHeight / 2) * Math.sqrt(3) / 2;
 
         const x1 = this.middleX;
         const y1 = this.middleY - halfHeight;
-        const x2 = this.canvasSize;
+        const x2 = this.canvasWidth;
         const y2 = this.middleY + halfHeight;
         const x3 = 0;
         const y3 = this.middleY + halfHeight;
@@ -52,7 +39,11 @@ export class Triangle4Composition extends Composition {
 
     drawNext(p: p5, iterations: number, colors: Colors, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number): void {
         p.fill(colors.color());
-        p.triangle(x1, y1, x2, y2, x3, y3);
+        p.triangle(
+            x1, y1,
+            x2, y2,
+            x3, y3
+        )
 
         if (iterations <= 0 || (Math.abs(x1 - x2) <= this.minSize && Math.abs(y1 - y2) <= this.minSize)) {
             return;

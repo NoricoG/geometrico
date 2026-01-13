@@ -1,4 +1,3 @@
-
 export abstract class Parameter {
     abstract currentValue: number;
 

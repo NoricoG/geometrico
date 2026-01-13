@@ -1,8 +1,9 @@
 import p5 from "p5";
 
-import { Composition } from "./base";
+import { ListColors, RandomListColors } from "../../colors";
+import { Composition } from "../base";
 import { AnimatedParameter } from "./parameter";
-import { ListColors, RandomListColors } from "../colors";
+
 
 export class AnimatedSizeParameter extends AnimatedParameter {
     constructor() {
@@ -18,31 +19,25 @@ abstract class SizeAnimation extends Composition {
     animated = true;
     animatedSize: AnimatedParameter;
 
+    iterationLimit = 500;
+    branchingFactor = 1;
+
     colors: ListColors;
-    canvasWidth: number;
-    canvasHeight: number;
-    middleX: number;
-    middleY: number;
 
     abstract initialSize: number;
 
     currentThickness = 0;
 
     minShapeSize = 1;
-    iterationLimit = 500;
 
     constructor(p: p5) {
         super();
 
-        this.colors = new RandomListColors(p);
+        this.colors = RandomListColors.getRandom(p);
 
-        this.canvasWidth = p.windowWidth;
-        this.canvasHeight = p.windowHeight;
-        p.createCanvas(this.canvasWidth, this.canvasHeight);
+        this.createCanvas(p, true);
+
         p.background(255);
-
-        this.middleX = p.windowWidth / 2;
-        this.middleY = p.windowHeight / 2;
 
         this.animatedSize = new AnimatedSizeParameter();
     }

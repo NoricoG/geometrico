@@ -1,24 +1,34 @@
 import p5 from "p5";
 
+import { RotatingNestedSquaresAnimation, RotatingNestedTrianglesAnimation, Rotating2Triangle4Animation, Rotating4Triangle4Animation, MarginSquaresAngleAnimation } from "./scenes/parameter/angle";
+import { SquareSizeAnimation, CircleSizeAnimation, TriangleSizeAnimation } from "./scenes/parameter/size";
 
-import { DotsComposition } from "./scenes/dots";
-import { RotatingNestedSquaresAnimation, RotatingNestedTrianglesAnimation, Rotating2Triangle4Animation, MarginSquaresAngleAnimation } from "./scenes/nestedAngle";
-import { SquareSizeAnimation, CircleSizeAnimation, TriangleSizeAnimation } from "./scenes/nestedSize";
+import { Circle4Composition } from "./scenes/shape/circle4";
+import { Rectangle4Composition } from "./scenes/shape/reactangle4";
+import { Triangle2Composition } from "./scenes/shape/triangle2";
+import { Triangle3Composition } from "./scenes/shape/triangle3";
+import { Triangle4Composition } from "./scenes/shape/triangle4";
 
-import { Triangle4Composition } from "./scenes/triangle4";
 import { Composition } from "./scenes/base";
 
+function titleIndicator(indicator: string): void {
+  document.title = "Geometrico " + indicator;
+}
 
 function sketch(p: p5) {
   var composition: Composition;
 
   var pause = false;
   var firstFrameAfterPause = false;
+  var gainedFocus = false;
 
   p.setup = function setup(): void {
 
     const compositions = [
-      DotsComposition,
+      Circle4Composition,
+      Rectangle4Composition,
+      Triangle2Composition,
+      Triangle3Composition,
       Triangle4Composition,
       SquareSizeAnimation,
       CircleSizeAnimation,
@@ -26,14 +36,23 @@ function sketch(p: p5) {
       RotatingNestedSquaresAnimation,
       RotatingNestedTrianglesAnimation,
       Rotating2Triangle4Animation,
+      Rotating4Triangle4Animation,
       MarginSquaresAngleAnimation,
     ];
     const randomIndex = Math.floor(Math.random() * compositions.length);
     composition = new compositions[randomIndex](p);
+    console.log(composition.constructor.name);
+
+    if (composition.animated) {
+      titleIndicator("▶");
+    } else {
+      titleIndicator("◌");
+      composition.showLoadingText(p);
+    }
 
     p.noStroke();
 
-    p.frameRate(60)
+    p.frameRate(60);
   };
 
   p.draw = function draw(): void {
@@ -43,8 +62,12 @@ function sketch(p: p5) {
       return;
     }
 
-    // only draw when the window is focused
-    if (composition.animated && !p.focused) {
+    if (p.focused && !gainedFocus) {
+      gainedFocus = true;
+    }
+
+    // only draw when the window is focused, unless never focused before
+    if (composition.animated && gainedFocus && !p.focused) {
       return;
     }
 
@@ -52,17 +75,27 @@ function sketch(p: p5) {
 
     if (!composition.animated) {
       p.noLoop();
+      titleIndicator("✔");
     }
   };
 
   p.mousePressed = function mousePressed() {
-    if (pause == false) {
-      p.noLoop();
-      pause = true;
+    if (!p.mouseButton.left) {
+      return;
+    }
+
+    // if (p.mouseY > p.windowHeight / 2) {
+    if (p.mouseY > 0) {
+      if (pause == false) {
+        p.noLoop();
+        pause = true;
+      } else {
+        p.loop();
+        pause = false;
+        firstFrameAfterPause = true;
+      }
     } else {
-      p.loop();
-      pause = false;
-      firstFrameAfterPause = true;
+      alert("Click the bottom half of the screen to pause/resume the animation.\nClick the top half to open the menu (not implemented yet).\nRefresh the page to see a different composition.");
     }
   }
 }

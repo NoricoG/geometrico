@@ -1,8 +1,9 @@
 import p5 from "p5";
 
-import { Composition } from "./base";
+import { ListColors, RandomListColors } from "../../colors";
+import { Composition } from "../base";
 import { AnimatedParameter } from "./parameter";
-import { ListColors, RandomListColors } from "../colors";
+
 
 export class AnimatedAngleParameter extends AnimatedParameter {
     constructor() {
@@ -18,16 +19,13 @@ abstract class AngleAnimation extends Composition {
     animated = true;
     animatedOffset: AnimatedParameter;
 
-    colors: ListColors;
-    canvasWidth: number;
-    canvasHeight: number;
-    middleX: number;
-    middleY: number;
-
-    minSquareSize = 1;
-
     // only for compositions that don't branch
     iterationLimit = 200;
+    branchingFactor = 1;
+
+    colors: ListColors;
+
+    minSquareSize = 1;
 
     offset: number = 0;
     invOffset: number = 0;
@@ -35,21 +33,11 @@ abstract class AngleAnimation extends Composition {
     constructor(p: p5) {
         super();
 
-        this.colors = new RandomListColors(p);
+        this.colors = RandomListColors.getRandom(p);
 
         const fullScreen = Math.random() < 0.5;
-        if (fullScreen) {
-            this.canvasWidth = p.windowWidth;
-            this.canvasHeight = p.windowHeight;
-        } else {
-            const canvasSize = Math.min(p.windowWidth, p.windowHeight);
-            this.canvasWidth = canvasSize;
-            this.canvasHeight = canvasSize;
-        }
-        this.middleX = this.canvasWidth / 2;
-        this.middleY = this.canvasHeight / 2;
+        this.createCanvas(p, fullScreen);
 
-        p.createCanvas(this.canvasWidth, this.canvasHeight);
         p.background(255);
 
         this.animatedOffset = new AnimatedAngleParameter();
@@ -157,8 +145,9 @@ export class Rotating2Triangle4Animation extends AngleAnimation {
     constructor(p: p5) {
         super(p);
 
-        // lower because of branch factor 4
+        // lower because of branching factor
         this.iterationLimit = 9;
+        this.branchingFactor = 4;
     }
 
     draw(p: p5, deltaTime: number): void {
@@ -227,7 +216,58 @@ export class Rotating2Triangle4Animation extends AngleAnimation {
     }
 }
 
+export class Rotating4Triangle4Animation extends Rotating2Triangle4Animation {
+    constructor(p: p5) {
+        super(p);
 
+        // lower because of branching factor
+        this.iterationLimit = 8;
+        this.branchingFactor = 4;
+    }
+
+    draw(p: p5, deltaTime: number): void {
+        this.prepareDraw(deltaTime);
+
+        var middleX = this.canvasWidth / 2;
+        var middleY = this.canvasHeight / 2;
+
+        // top
+        var x1 = middleX;
+        var y1 = middleY;
+        var x2 = 0
+        var y2 = 0;
+        var x3 = this.canvasWidth;
+        var y3 = 0
+        this.drawAndNest(p, this.iterationLimit, this.colors.initial(), x1, x2, x3, y1, y2, y3);
+
+        // right
+        var x1 = middleX;
+        var y1 = middleY;
+        var x2 = this.canvasWidth;
+        var y2 = 0;
+        var x3 = this.canvasWidth;
+        var y3 = this.canvasHeight;
+        this.drawAndNest(p, this.iterationLimit, this.colors.initial().next(), x1, x2, x3, y1, y2, y3);
+
+        // bottom
+        var x1 = middleX;
+        var y1 = middleY;
+        var x2 = this.canvasWidth;
+        var y2 = this.canvasHeight;
+        var x3 = 0;
+        var y3 = this.canvasHeight;
+        this.drawAndNest(p, this.iterationLimit, this.colors.initial(), x1, x2, x3, y1, y2, y3);
+
+        // left
+        var x1 = middleX;
+        var y1 = middleY;
+        var x2 = 0;
+        var y2 = this.canvasHeight;
+        var x3 = 0;
+        var y3 = 0;
+        this.drawAndNest(p, this.iterationLimit, this.colors.initial().next(), x1, x2, x3, y1, y2, y3);
+    }
+}
 
 export class MarginSquaresAngleAnimation extends AngleAnimation {
     // to go bigger than 1.4 we need more iterations
