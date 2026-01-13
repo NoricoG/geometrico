@@ -17,8 +17,8 @@ export class Rectangle4Composition extends Composition {
     constructor(p: p5) {
         super();
 
-        const fullScreen = Math.random() < 0.5;
-        this.createCanvas(p, fullScreen);
+        const square = Math.random() < 0.5;
+        this.createCanvas(p, square);
 
         this.colors = RandomListColors.getRandom(p);
     }

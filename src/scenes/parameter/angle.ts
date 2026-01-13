@@ -35,8 +35,8 @@ abstract class AngleAnimation extends Composition {
 
         this.colors = RandomListColors.getRandom(p);
 
-        const fullScreen = Math.random() < 0.5;
-        this.createCanvas(p, fullScreen);
+        const square = Math.random() < 0.5;
+        this.createCanvas(p, square);
 
         p.background(255);
 

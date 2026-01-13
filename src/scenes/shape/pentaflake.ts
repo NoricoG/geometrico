@@ -14,14 +14,14 @@ export class PentaflakeComposition extends Composition {
 
     minSize = 5;
 
-    fitInCanvas: boolean;
+    outsideCanvas: boolean;
 
     constructor(p: p5) {
         super();
 
-        const fullScreen = Math.random() < 0.5;
-        this.fitInCanvas = Math.random() < 0.5;
-        this.createCanvas(p, fullScreen);
+        const square = Math.random() < 0.3;
+        this.outsideCanvas = !square && Math.random() < 0.8;
+        this.createCanvas(p, square);
 
         this.colors = RandomListColors.getRandom(p);
     }
@@ -31,7 +31,7 @@ export class PentaflakeComposition extends Composition {
             p.background(this.colors.color());
         }
 
-        const radiusFactor = this.fitInCanvas ? 0.5 : 1.5;
+        const radiusFactor = this.outsideCanvas ? 1.5 : 0.5;
         const radius = Math.min(this.canvasWidth, this.canvasHeight) / 2 * radiusFactor;
 
         this.drawNext(p, this.iterationLimit, this.colors.next(), radius, true, this.middleX, this.middleY);
