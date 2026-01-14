@@ -1,3 +1,5 @@
+/* Global styles */
+
 html,
 body {
   padding: 0;
@@ -7,7 +9,123 @@ body {
 }
 
 body {
+  position: relative;
+  font-family: sans-serif;
+  user-select: none;
+}
+
+p {
+  margin: 0.5em;
+}
+
+/* Fullscreen layers */
+
+#canvas-container,
+#reload-menu,
+#main-menu,
+#pause-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#canvas-container {
+  z-index: 10;
+}
+
+/* Generic menu */
+
+.menu {
+  background-color: rgba(50, 50, 50, 0.8);
+  color: white;
+}
+
+.button {
+  /* only extra color on top of menu*/
+  background-color: rgba(110, 110, 110, 0.2);
+
+  border: none;
+  border-radius: 4px;
+
   display: flex;
   justify-content: center;
   align-items: center;
+
+  &:hover {
+    background-color: rgba(150, 150, 150, 0.2);
+    cursor: pointer;
+  }
+}
+
+/* Specific menu */
+
+#reload-menu {
+  z-index: 40;
+  display: none;
+  justify-content: flex-start;
+
+  font-size: 32px;
+
+  #reload-proceed {
+    flex: 1;
+    width: calc(100% - 2em);
+
+    margin-top: 1em;
+  }
+
+  #reload-close {
+    flex: 2;
+    width: calc(100% - 2em);
+
+    margin-top: 1em;
+    margin-bottom: 1em;
+  }
+}
+
+
+#main-menu {
+  z-index: 30;
+  display: none;
+
+  .button {
+    min-width: 300px;
+    padding: 1.5em 2em;
+    margin: 0.5em 0;
+    font-size: 1.2em;
+  }
+}
+
+/* Pause indicator animation */
+
+#pause-indicator {
+  display: flex;
+  opacity: 0;
+  z-index: 20;
+
+  background-color: rgba(122, 122, 122, 0.4);
+}
+
+#pause-indicator.show {
+  animation: anime 0.5s 1;
+}
+
+@keyframes anime {
+  0% {
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }

@@ -26,7 +26,8 @@ export abstract class Composition {
         this.middleX = this.canvasWidth / 2;
         this.middleY = this.canvasHeight / 2;
 
-        p.createCanvas(this.canvasWidth, this.canvasHeight);
+        p.createCanvas(this.canvasWidth, this.canvasHeight)
+            .parent("canvas-container");
     }
 
     showLoadingText(p: p5): void {

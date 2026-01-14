@@ -282,7 +282,7 @@ export class MarginSquaresAngleAnimation extends AngleAnimation {
         const maxValue = 1 - minValue;
 
         // prevent visible jump
-        const bouncing = minValue < 0.02 && Math.random() < 0.8;
+        const bouncing = minValue > 0.02 || Math.random() < 0.2;
         const speed = Math.random() * 0.0001 + 0.0001;
 
         this.animatedOffset = new AnimatedParameter(minValue, maxValue, bouncing, speed);

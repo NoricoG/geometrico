@@ -112,8 +112,8 @@ class BlackWhiteColor extends ListColors {
     }
 }
 
-export class OppositeHue extends ListColors {
-    constructor(p: p5, n: number) {
+abstract class GivenRangeHue extends ListColors {
+    constructor(p: p5, n: number, hueStart: number, hueRange: number) {
         p.colorMode(p.HSB);
 
         // between 100-255 to avoid colors being too dull
@@ -121,14 +121,29 @@ export class OppositeHue extends ListColors {
         // between 50-255 to avoid colors being too dark
         var brightness = Math.random() * 205 + 50;
 
-        var firstHue = Math.random() * 360;
+        var firstHue = hueStart + Math.random() * hueRange;
         var colors: p5.Color[] = [];
         for (var i = 0; i < n; i++) {
-            var newHue = (firstHue + (360 / n) * i) % 360;
+            var newHue = (firstHue + (hueRange / n) * i) % 360;
             colors.push(p.color(newHue, saturation, brightness));
         }
 
         super(colors);
+    }
+}
+
+export class OppositeHue extends GivenRangeHue {
+    constructor(p: p5, n: number) {
+        super(p, n, 0, 360);
+    }
+}
+
+export class RangeHue extends GivenRangeHue {
+    constructor(p: p5, n: number) {
+        var hueStart = Math.random() * 360;
+        var minimalRange = Math.min(360, 80 + 5 * n);
+        var hueRange = Math.random() * (360 - minimalRange) + minimalRange;
+        super(p, n, hueStart, hueRange);
     }
 }
 
@@ -176,18 +191,22 @@ class OppositeSaturation extends ListColors {
 export class RandomListColors extends ListColors {
     static getRandom(p: p5): ListColors {
         const weightedOptions: ListColors[] = [
-            ...Array(3).fill(new BlackWhite(p)),
-            ...Array(3).fill(new BlackColor(p)),
-            ...Array(3).fill(new WhiteColor(p)),
-            ...Array(3).fill(new BlackWhiteColor(p)),
-            ...Array(3).fill(new OppositeHue(p, 2)),
-            ...Array(3).fill(new OppositeHue(p, 3)),
-            ...Array(3).fill(new OppositeHue(p, 4)),
-            ...Array(3).fill(new OppositeHue(p, Math.floor(Math.random() * 5 + 5))), // 5-9 colors
-            ...Array(3).fill(new OppositeHue(p, Math.floor(Math.random() * 10 + 10))), // 10-19 colors
-            ...Array(3).fill(new OppositeHue(p, Math.floor(Math.random() * 30 + 20))), // 20-49 colors
-            ...Array(3).fill(new OppositeBrightness(p)),
-            ...Array(3).fill(new OppositeSaturation(p)),
+            new BlackWhite(p),
+            new BlackColor(p),
+            new WhiteColor(p),
+            new BlackWhiteColor(p),
+            new OppositeHue(p, 2),
+            new OppositeHue(p, 3),
+            new OppositeHue(p, 4),
+            new OppositeHue(p, Math.floor(Math.random() * 5 + 5)), // 5-9 colors
+            new OppositeHue(p, Math.floor(Math.random() * 10 + 10)), // 10-19 colors
+            new OppositeHue(p, Math.floor(Math.random() * 30 + 20)), // 20-49 colors
+            new RangeHue(p, 3),
+            new RangeHue(p, 4),
+            new RangeHue(p, Math.floor(Math.random() * 5 + 5)), // 5-9 colors
+            new RangeHue(p, Math.floor(Math.random() * 10 + 10)), // 10-19 colors
+            new OppositeBrightness(p),
+            new OppositeSaturation(p),
 
         ];
         const chosenIndex = Math.floor(Math.random() * weightedOptions.length);

@@ -12,8 +12,26 @@
 
 <body>
   <script type="module" src="./src/main.ts"></script>
-  <div>
+  <div id="canvas-container">
   </div>
+  <div id="reload-menu" class="menu">
+    <div class="button" id="reload-proceed">Next figure</div>
+    <div class="button" id="reload-close">Back</div>
+  </div>
+  <div id="main-menu" class="menu">
+    <h2>Menu</h2>
+    <div class="button" id="main-save">Save picture</div>
+    <div class="button" id="main-close">Close menu</div>
+    <h2>Help</h2>
+    <p>
+      When you are not in this menu:<br><br>
+      Click the top third of the screen or refresh the page to proceed to the next figure.<br><br>
+      Click the middle third of the screen to open this menu.<br><br>
+      Click the bottom third of the screen to go play or pause the animation.<br>
+      Some figures don't have an animation.
+    </p>
+  </div>
+  <div id="pause-indicator">||</div>
 </body>
 
 </html>
