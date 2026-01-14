@@ -1,5 +1,6 @@
 import p5 from "p5";
 
+import { Colors } from "../colors";
 
 export abstract class Composition {
     abstract animated: boolean;
@@ -12,7 +13,13 @@ export abstract class Composition {
     middleX: number = -1;
     middleY: number = -1;
 
+    abstract colors: Colors;
+
     abstract draw(p: p5, deltaTime: number): void;
+
+    changeAnimatedParameters(): void {
+        // default: do nothing
+    }
 
     createCanvas(p: p5, square: boolean): void {
         this.canvasWidth = p.windowWidth;

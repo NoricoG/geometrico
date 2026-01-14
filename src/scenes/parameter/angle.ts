@@ -15,9 +15,30 @@ export class AnimatedAngleParameter extends AnimatedParameter {
     }
 }
 
+export class HalfAnimatedAngleParameter extends AnimatedParameter {
+    constructor() {
+        var minValue = 0.005;
+        var maxValue = 1 - minValue;
+
+        const bouncing = Math.random() < 0.7;
+        const bounceHalfway = bouncing && Math.random() < 0.5;
+
+        if (bounceHalfway) {
+            if (Math.random() < 0.5) {
+                maxValue = 0.5;
+            } else {
+                minValue = 0.5;
+            }
+        }
+
+        const speed = Math.random() * 0.0001 + 0.0001;
+        super(minValue, maxValue, bouncing, speed);
+    }
+}
+
 abstract class AngleAnimation extends Composition {
     animated = true;
-    animatedOffset: AnimatedParameter;
+    animatedOffset: AnimatedParameter = new AnimatedAngleParameter();
 
     // only for compositions that don't branch
     iterationLimit = 200;
@@ -39,7 +60,9 @@ abstract class AngleAnimation extends Composition {
         this.createCanvas(p, square);
 
         p.background(255);
+    }
 
+    changeAnimatedParameters(): void {
         this.animatedOffset = new AnimatedAngleParameter();
     }
 
@@ -142,12 +165,18 @@ export class RotatingNestedTrianglesAnimation extends AngleAnimation {
 
 export class Rotating2Triangle4Animation extends AngleAnimation {
 
+    animatedOffset = new HalfAnimatedAngleParameter();
+
     constructor(p: p5) {
         super(p);
 
         // lower because of branching factor
         this.iterationLimit = 9;
         this.branchingFactor = 4;
+    }
+
+    changeAnimatedParameters(): void {
+        this.animatedOffset = new HalfAnimatedAngleParameter();
     }
 
     draw(p: p5, deltaTime: number): void {
@@ -269,23 +298,29 @@ export class Rotating4Triangle4Animation extends Rotating2Triangle4Animation {
     }
 }
 
-export class MarginSquaresAngleAnimation extends AngleAnimation {
-    iterationLimit = 300;
-
-    margin = 1 + Math.random() * 0.9;
-
-    constructor(p: p5) {
-        super(p);
-
+class MarginSquaresParameter extends AnimatedParameter {
+    constructor(margin: number) {
         // minValue based on observed offsets with iterationLimit 300
-        const minValue = Math.max(0.0001, 0.75 * this.margin - 1);
+        const minValue = Math.max(0.0001, 0.75 * margin - 1);
         const maxValue = 1 - minValue;
 
         // prevent visible jump
         const bouncing = minValue > 0.02 || Math.random() < 0.2;
         const speed = Math.random() * 0.0001 + 0.0001;
 
-        this.animatedOffset = new AnimatedParameter(minValue, maxValue, bouncing, speed);
+        super(minValue, maxValue, bouncing, speed);
+    }
+}
+
+export class MarginSquaresAngleAnimation extends AngleAnimation {
+    iterationLimit = 300;
+
+    margin = 1 + Math.random() * 0.9;
+
+    animatedOffset = new MarginSquaresParameter(this.margin);
+
+    setAnimatedParameters(): void {
+        this.animatedOffset = new MarginSquaresParameter(this.margin);
     }
 
     draw(p: p5, deltaTime: number): void {

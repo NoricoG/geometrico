@@ -17,7 +17,7 @@ export class AnimatedSizeParameter extends AnimatedParameter {
 
 abstract class SizeAnimation extends Composition {
     animated = true;
-    animatedSize: AnimatedParameter;
+    animatedSize: AnimatedParameter = new AnimatedSizeParameter();
 
     iterationLimit = 500;
     branchingFactor = 1;
@@ -38,7 +38,9 @@ abstract class SizeAnimation extends Composition {
         this.createCanvas(p, true);
 
         p.background(255);
+    }
 
+    changeAnimatedParameters(): void {
         this.animatedSize = new AnimatedSizeParameter();
     }
 

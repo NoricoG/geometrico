@@ -39,6 +39,10 @@ export class Rectangle4Composition extends Composition {
     }
 
     drawNext(p: p5, iterations: number, colors: Colors, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number): void {
+        if (iterations < 0 || (Math.abs(x1 - x2) + Math.abs(y1 - y2) <= this.minSize)) {
+            return;
+        }
+
         p.fill(colors.color());
         p.quad(
             Math.round(x1), Math.round(y1),

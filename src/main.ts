@@ -1,7 +1,17 @@
 import p5 from "p5";
 
-import { RotatingNestedSquaresAnimation, RotatingNestedTrianglesAnimation, Rotating2Triangle4Animation, Rotating4Triangle4Animation, MarginSquaresAngleAnimation } from "./scenes/parameter/angle";
-import { SquareSizeAnimation, CircleSizeAnimation, TriangleSizeAnimation } from "./scenes/parameter/size";
+import {
+  RotatingNestedSquaresAnimation,
+  RotatingNestedTrianglesAnimation,
+  Rotating2Triangle4Animation,
+  Rotating4Triangle4Animation,
+  MarginSquaresAngleAnimation,
+} from "./scenes/parameter/angle";
+import {
+  SquareSizeAnimation,
+  CircleSizeAnimation,
+  TriangleSizeAnimation
+} from "./scenes/parameter/size";
 
 import { AppolonianGasketComposition } from "./scenes/shape/appolonianGasket";
 import { Circle4Composition } from "./scenes/shape/circle4";
@@ -13,78 +23,7 @@ import { Triangle3Composition } from "./scenes/shape/triangle3";
 import { Triangle4Composition } from "./scenes/shape/triangle4";
 
 import { Composition } from "./scenes/base";
-
-function titleIndicator(indicator: string): void {
-  document.title = "Geometrico " + indicator;
-}
-
-var inMenu = false;
-
-function showMenu(id: string): void {
-  inMenu = true;
-
-  const menu = document.getElementById(id);
-
-  if (menu) {
-    menu.style.display = "flex";
-  }
-}
-
-function hideMenu(id: string): void {
-  inMenu = false;
-
-  const menu = document.getElementById(id);
-  if (menu) {
-    menu.style.display = "none";
-  }
-}
-
-function setupMenus(p: p5): void {
-  // reload menu
-  const reloadProceed = document.getElementById("reload-proceed")
-  if (reloadProceed) {
-    reloadProceed.onclick = function () {
-      location.reload();
-    };
-  }
-  const reloadClose = document.getElementById("reload-close")
-  if (reloadClose) {
-    reloadClose.onclick = function () {
-      hideMenu("reload-menu");
-    };
-  }
-
-  // main menu
-  const mainSave = document.getElementById("main-save")
-  if (mainSave) {
-    mainSave.onclick = function () {
-      const randomPart = Math.random().toString(36).substring(2, 10);
-      const filename = 'geometrico_' + randomPart;
-      p.saveCanvas(filename, 'png');
-      hideMenu("main-menu");
-    };
-  }
-  const mainClose = document.getElementById("main-close")
-  if (mainClose) {
-    mainClose.onclick = function () {
-      hideMenu("main-menu");
-    };
-  }
-}
-
-function showPauseIndicator(symbol: string): void {
-  const indicator = document.getElementById("pause-indicator");
-  if (!indicator) {
-    return;
-  }
-
-  indicator.innerText = symbol;
-
-  indicator.classList.remove('show');
-  // this force-restarts the CSS animation
-  void indicator.offsetWidth;
-  indicator.classList.add('show');
-}
+import { UI } from "./ui";
 
 function sketch(p: p5) {
   var composition: Composition;
@@ -126,9 +65,9 @@ function sketch(p: p5) {
     console.log(composition.constructor.name);
 
     if (composition.animated) {
-      titleIndicator("▶");
+      UI.setTitle("▶");
     } else {
-      titleIndicator("◌");
+      UI.setTitle("◌");
       composition.showLoadingText(p);
     }
 
@@ -136,7 +75,7 @@ function sketch(p: p5) {
 
     p.frameRate(60);
 
-    setupMenus(p);
+    UI.setupMenu(p, composition, playPause);
   };
 
   p.draw = function draw(): void {
@@ -159,9 +98,26 @@ function sketch(p: p5) {
 
     if (!composition.animated) {
       p.noLoop();
-      titleIndicator("✔");
+      UI.setTitle("✔");
     }
   };
+
+  function playPause(playOnly: boolean): void {
+    if (!composition.animated) {
+      UI.showPauseIndicator("❌");
+      return;
+    }
+
+    if (pause || playOnly) {
+      p.loop();
+      pause = false;
+      firstFrameAfterPause = true;
+    } else {
+      p.noLoop();
+      pause = true;
+    }
+    UI.showPauseIndicator(pause ? "▐▐" : "▶");
+  }
 
   p.mousePressed = function mousePressed() {
     if (!p.mouseButton.left) {
@@ -171,28 +127,15 @@ function sketch(p: p5) {
     const spaceAboveCanvas = (p.windowHeight - p.height) / 2;
     const relativeMouseY = (p.mouseY + spaceAboveCanvas) / p.windowHeight;
 
-    if (relativeMouseY > 2 / 3) {
-      if (!composition.animated) {
-        showPauseIndicator("❌");
-        return;
-      }
+    if (UI.isInMenu()) {
+      // let menu handle clicks
+      return;
+    }
 
-      if (pause == false) {
-        p.noLoop();
-        pause = true;
-      } else {
-        p.loop();
-        pause = false;
-        firstFrameAfterPause = true;
-      }
-      showPauseIndicator(pause ? "▐▐" : "▶");
-
-    } else if (!inMenu) {
-      if (relativeMouseY > 1 / 3) {
-        showMenu("main-menu");
-      } else {
-        showMenu("reload-menu");
-      }
+    if (relativeMouseY < 1 / 2) {
+      UI.showMenu(composition);
+    } else {
+      playPause(false);
     }
   }
 }
