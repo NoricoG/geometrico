@@ -7,7 +7,7 @@ import { Composition } from "../base";
 export class Triangle2Composition extends Composition {
     animated = false;
 
-    iterationLimit = Math.round(Math.random() * 5 + 5);
+    iterationLimit = Math.round(Math.random() * 10 + 10);
     branchingFactor = 2;
 
     colors: ListColors;

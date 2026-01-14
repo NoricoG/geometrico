@@ -4,9 +4,11 @@
 
 Go to https://noricog.github.io/geometrico/
 
-Every refresh a new animation or non-animated composition will appear.
+Click the top third of the screen or refresh the page to proceed to the next animation or static figure.
 
-Click to pause or play an animation.
+Click the middle third of the screen to open the menu.
+
+Click the bottom third of the screen to go play or pause the animation.
 
 ## Development
 
