@@ -211,6 +211,7 @@ export class RandomListColors extends ListColors {
         ];
         const chosenIndex = Math.floor(Math.random() * weightedOptions.length);
         const chosen = weightedOptions[chosenIndex];
+        console.log(chosen.constructor.name);
         return chosen;
     }
 }

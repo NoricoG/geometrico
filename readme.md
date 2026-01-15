@@ -4,7 +4,7 @@
 
 Go to https://noricog.github.io/geometrico/
 
-Every time a different iamge or animation will show.
+Every time a different image or animation will show.
 
 Click anywhere on the screen to open the menu.
 
