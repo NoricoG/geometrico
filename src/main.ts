@@ -117,14 +117,6 @@ function sketch(p: p5) {
       paused = true;
     }
   }
-
-  p.mousePressed = function mousePressed() {
-    if (!p.mouseButton.left) {
-      return;
-    }
-
-    UI.showMenu(composition, paused);
-  }
 }
 
 new p5(sketch);

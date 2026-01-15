@@ -29,7 +29,7 @@ export const UI = {
                 menuSpeed.innerText = "Change animation";
                 menuSpeed.classList.remove("disabled");
             } else {
-                menuSpeed.innerText = "( Not animated )";
+                menuSpeed.innerText = "Not animated";
                 menuSpeed.classList.add("disabled");
             }
         }
@@ -37,10 +37,10 @@ export const UI = {
         const menuPause = document.getElementById("menu-pause");
         if (menuPause) {
             if (composition.animated) {
-                menuPause.innerText = paused ? "Play (or pause)" : "Pause (or play)";
+                menuPause.innerText = paused ? "Play" : "Pause";
                 menuPause.classList.remove("disabled");
             } else {
-                menuPause.innerText = "( Not animated )";
+                menuPause.innerText = "Not animated";
                 menuPause.classList.add("disabled");
             }
         }
@@ -57,6 +57,17 @@ export const UI = {
     },
 
     setupMenu(p: p5, composition: Composition, playPause: (playOnly: boolean) => void): void {
+        const canvasContainer = document.getElementById("canvas-container");
+        if (canvasContainer) {
+            canvasContainer.onclick = () => {
+                if (UI.isInMenu()) {
+                    UI.hideMenu();
+                } else {
+                    UI.showMenu(composition, p.isLooping() ? false : true);
+                };
+            }
+        }
+
         const setupMenuItem = (id: string, handler: () => void): void => {
             const element = document.getElementById(id);
             if (element) {
@@ -64,8 +75,8 @@ export const UI = {
                     if (element.classList.contains("disabled")) {
                         return;
                     }
-                    handler();
                     UI.hideMenu();
+                    handler();
                 };
             }
         };
