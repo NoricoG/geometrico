@@ -1,79 +1,97 @@
-/* Global styles */
-
 html,
 body {
-  padding: 0;
   margin: 0;
+  padding: 0;
   height: 100%;
   overflow: hidden;
 }
 
 body {
-  position: relative;
   font-family: sans-serif;
-  user-select: none;
-
   cursor: pointer;
+  user-select: none;
 }
 
 p {
   margin: 0.5em;
 }
 
-/* Fullscreen layers */
+#canvas-container {
+  position: absolute;
+  inset: 0;
 
-#canvas-container,
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/**************************************************/
+
 #menu {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-#canvas-container {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 10;
-}
 
-/* Menu */
-
-.menu {
-  background-color: rgba(50, 50, 50, 0.8);
-  color: white;
-}
-
-#menu {
-  z-index: 30;
   display: none;
-}
-
-.button {
-  /* only extra color on top of menu*/
-  background-color: rgba(110, 110, 110, 0.2);
-
-  border: none;
-  border-radius: 4px;
-
-  display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
 
-  min-width: 300px;
-  padding: 1.5em 2em;
-  margin: 0.5em 0;
-  font-size: 1.2em;
+  gap: 0.75em;
+  max-width: 90%;
+  max-height: 90%;
+  padding: 2.5em;
+  border-radius: 12px;
 
-  &:hover {
-    background-color: rgba(150, 150, 150, 0.2);
-    cursor: pointer;
-  }
+  color: white;
+  background-color: rgba(50, 50, 50, 0.9);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+#menu.show {
+  display: flex;
 }
 
 .menu-spacer {
-  height: 2em;
+  height: 1.5em;
+}
+
+
+/**************************************************/
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 300px;
+
+  margin: 0;
+  padding: 1.2em 2em;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2em;
+
+  cursor: pointer;
+  background-color: rgba(130, 130, 130, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    background-color: rgba(150, 150, 150, 0.6);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    color: rgba(255, 255, 255, 0.5);
+    opacity: 0.5;
+
+    &:hover {
+      transform: none;
+      background-color: rgba(130, 130, 130, 0.4);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+  }
 }

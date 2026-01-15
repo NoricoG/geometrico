@@ -9,10 +9,6 @@ export const UI = {
         return inMenu;
     },
 
-    setTitle(indicator: string): void {
-        document.title = "Geometrico " + indicator;
-    },
-
     showMenu(composition: Composition, paused: boolean): void {
         if (UI.isInMenu()) {
             // let menu handle clicks
@@ -25,18 +21,16 @@ export const UI = {
         }
 
         inMenu = true;
-        menu.style.display = "flex";
+        menu.classList.add('show');
 
         const menuSpeed = document.getElementById("menu-speed");
         if (menuSpeed) {
             if (composition.animated) {
                 menuSpeed.innerText = "Change animation";
-                menuSpeed.style.cursor = "pointer";
-                menuSpeed.style.color = "white";
+                menuSpeed.classList.remove("disabled");
             } else {
                 menuSpeed.innerText = "( Not animated )";
-                menuSpeed.style.cursor = "not-allowed";
-                menuSpeed.style.color = "gray";
+                menuSpeed.classList.add("disabled");
             }
         }
 
@@ -44,12 +38,10 @@ export const UI = {
         if (menuPause) {
             if (composition.animated) {
                 menuPause.innerText = paused ? "Play (or pause)" : "Pause (or play)";
-                menuPause.style.cursor = "pointer";
-                menuPause.style.color = "white";
+                menuPause.classList.remove("disabled");
             } else {
                 menuPause.innerText = "( Not animated )";
-                menuPause.style.cursor = "not-allowed";
-                menuPause.style.color = "gray";
+                menuPause.classList.add("disabled");
             }
         }
     },
@@ -61,7 +53,7 @@ export const UI = {
         }
 
         inMenu = false;
-        menu.style.display = "none";
+        menu.classList.remove('show');
     },
 
     setupMenu(p: p5, composition: Composition, playPause: (playOnly: boolean) => void): void {
@@ -69,6 +61,9 @@ export const UI = {
             const element = document.getElementById(id);
             if (element) {
                 element.onclick = () => {
+                    if (element.classList.contains("disabled")) {
+                        return;
+                    }
                     handler();
                     UI.hideMenu();
                 };

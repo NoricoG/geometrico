@@ -68,10 +68,7 @@ function sketch(p: p5) {
     }
     console.log(composition.constructor.name);
 
-    if (composition.animated) {
-      UI.setTitle("▶");
-    } else {
-      UI.setTitle("◌");
+    if (!composition.animated) {
       composition.showLoadingText(p);
     }
 
@@ -102,7 +99,6 @@ function sketch(p: p5) {
 
     if (!composition.animated) {
       p.noLoop();
-      UI.setTitle("✔");
     }
   };
 
