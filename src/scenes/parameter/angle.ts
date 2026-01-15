@@ -67,7 +67,12 @@ abstract class AngleAnimation extends Composition {
     }
 
     prepareDraw(deltaTime: number): void {
-        this.offset = this.animatedOffset.increment(deltaTime);
+        if (this.animated) {
+            this.offset = this.animatedOffset.increment(deltaTime);
+        } else {
+            // for static variations
+            this.offset = this.animatedOffset.currentValue;
+        }
         this.invOffset = 1 - this.offset;
     }
 }
@@ -203,7 +208,14 @@ export class Rotating2Triangle4Animation extends AngleAnimation {
         p.fill(colors.color())
         p.triangle(x1, y1, x2, y2, x3, y3)
 
-        if (remainingIterations <= 0) {
+        var smallSides = 0;
+        for (const sidePairs of [[x1, x2], [x2, x3], [x3, x1], [y1, y2], [y2, y3], [y3, y1]]) {
+            if (Math.abs(sidePairs[0] - sidePairs[1]) < this.minSquareSize) {
+                smallSides++;
+            }
+        }
+
+        if (remainingIterations <= 0 || smallSides >= 3) {
             return;
         }
 
@@ -295,6 +307,38 @@ export class Rotating4Triangle4Animation extends Rotating2Triangle4Animation {
         var x3 = 0;
         var y3 = 0;
         this.drawAndNest(p, this.iterationLimit, this.colors.initial().next(), x1, x2, x3, y1, y2, y3);
+    }
+}
+
+class AnimatedToStaticRotationParameter extends HalfAnimatedAngleParameter {
+    constructor() {
+        super();
+
+        if (Math.random() < 0.5) {
+            this.currentValue = 0.5;
+        } else {
+            this.currentValue = Math.random() * 0.2 + 0.05;
+        }
+    }
+}
+
+export class Rotated2Triangle4Composition extends Rotating2Triangle4Animation {
+    animated = false;
+
+    constructor(p: p5) {
+        super(p);
+        this.animatedOffset = new AnimatedToStaticRotationParameter();
+        this.iterationLimit *= 1.5;
+    }
+}
+
+export class Rotated4Triangle4Composition extends Rotating4Triangle4Animation {
+    animated = false;
+
+    constructor(p: p5) {
+        super(p);
+        this.animatedOffset = new AnimatedToStaticRotationParameter();
+        this.iterationLimit *= 1.5;
     }
 }
 

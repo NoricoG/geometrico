@@ -1,6 +1,8 @@
 import p5 from "p5";
 
 import {
+  Rotated2Triangle4Composition,
+  Rotated4Triangle4Composition,
   RotatingNestedSquaresAnimation,
   RotatingNestedTrianglesAnimation,
   Rotating2Triangle4Animation,
@@ -41,6 +43,8 @@ function sketch(p: p5) {
       PolyflakeComposition, // twice because of variability
       PythagorasTreeComposition,
       Rectangle4Composition,
+      Rotated2Triangle4Composition,
+      Rotated4Triangle4Composition,
       Triangle2Composition,
       Triangle3Composition,
       Triangle4Composition,
