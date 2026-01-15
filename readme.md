@@ -4,18 +4,9 @@
 
 Go to https://noricog.github.io/geometrico/
 
-Click the top half of the screen to open the menu.
+Every time a different iamge or animation will show.
 
-From there you can:
-
-- Switch to the next animation or figure
-- Change the colors
-- Change the animation
-- Save the current screen as a picture
-
-Click the bottom half of the screen to play or pause the animation.
-
-Changing or pausing an animation is disabled for a static figure.
+Click anywhere on the screen to open the menu.
 
 ## Development
 

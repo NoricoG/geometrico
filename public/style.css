@@ -23,8 +23,7 @@ p {
 /* Fullscreen layers */
 
 #canvas-container,
-#menu,
-#pause-indicator {
+#menu {
   position: absolute;
   top: 0;
   left: 0;
@@ -75,30 +74,6 @@ p {
   }
 }
 
-/* Pause indicator animation */
-
-#pause-indicator {
-  display: flex;
-  opacity: 0;
-  z-index: 20;
-
-  background-color: rgba(122, 122, 122, 0.4);
-}
-
-#pause-indicator.show {
-  animation: anime 0.5s 1;
-}
-
-@keyframes anime {
-  0% {
-    opacity: 0;
-  }
-
-  20% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0;
-  }
+.menu-spacer {
+  height: 2em;
 }

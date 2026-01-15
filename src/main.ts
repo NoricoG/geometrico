@@ -30,7 +30,7 @@ import { UI } from "./ui";
 function sketch(p: p5) {
   var composition: Composition;
 
-  var pause = false;
+  var paused = false;
   var firstFrameAfterPause = false;
   var gainedFocus = false;
 
@@ -112,15 +112,14 @@ function sketch(p: p5) {
       return;
     }
 
-    if (pause || playOnly) {
+    if (paused || playOnly) {
       p.loop();
-      pause = false;
+      paused = false;
       firstFrameAfterPause = true;
     } else {
       p.noLoop();
-      pause = true;
+      paused = true;
     }
-    UI.showPauseIndicator(pause ? "▐▐" : "▶");
   }
 
   p.mousePressed = function mousePressed() {
@@ -128,19 +127,7 @@ function sketch(p: p5) {
       return;
     }
 
-    const spaceAboveCanvas = (p.windowHeight - p.height) / 2;
-    const relativeMouseY = (p.mouseY + spaceAboveCanvas) / p.windowHeight;
-
-    if (UI.isInMenu()) {
-      // let menu handle clicks
-      return;
-    }
-
-    if (relativeMouseY < 1 / 2) {
-      UI.showMenu(composition);
-    } else {
-      playPause(false);
-    }
+    UI.showMenu(composition, paused);
   }
 }
 

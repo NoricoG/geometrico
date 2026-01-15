@@ -13,7 +13,12 @@ export const UI = {
         document.title = "Geometrico " + indicator;
     },
 
-    showMenu(composition: Composition): void {
+    showMenu(composition: Composition, paused: boolean): void {
+        if (UI.isInMenu()) {
+            // let menu handle clicks
+            return;
+        }
+
         const menu = document.getElementById("menu");
         if (!menu) {
             return;
@@ -23,17 +28,29 @@ export const UI = {
         menu.style.display = "flex";
 
         const menuSpeed = document.getElementById("menu-speed");
-        if (!menuSpeed) {
-            return;
+        if (menuSpeed) {
+            if (composition.animated) {
+                menuSpeed.innerText = "Change animation";
+                menuSpeed.style.cursor = "pointer";
+                menuSpeed.style.color = "white";
+            } else {
+                menuSpeed.innerText = "( Not animated )";
+                menuSpeed.style.cursor = "not-allowed";
+                menuSpeed.style.color = "gray";
+            }
         }
-        if (composition.animated) {
-            menuSpeed.innerText = "Change animation";
-            menuSpeed.style.cursor = "pointer";
-            menuSpeed.style.color = "white";
-        } else {
-            menuSpeed.innerText = "( No animation )";
-            menuSpeed.style.cursor = "not-allowed";
-            menuSpeed.style.color = "gray";
+
+        const menuPause = document.getElementById("menu-pause");
+        if (menuPause) {
+            if (composition.animated) {
+                menuPause.innerText = paused ? "Play (or pause)" : "Pause (or play)";
+                menuPause.style.cursor = "pointer";
+                menuPause.style.color = "white";
+            } else {
+                menuPause.innerText = "( Not animated )";
+                menuPause.style.cursor = "not-allowed";
+                menuPause.style.color = "gray";
+            }
         }
     },
 
@@ -51,7 +68,10 @@ export const UI = {
         const setupMenuItem = (id: string, handler: () => void): void => {
             const element = document.getElementById(id);
             if (element) {
-                element.onclick = handler;
+                element.onclick = () => {
+                    handler();
+                    UI.hideMenu();
+                };
             }
         };
 
@@ -64,7 +84,6 @@ export const UI = {
             if (!composition.animated) {
                 composition.draw(p, 0);
             }
-            UI.hideMenu();
         });
 
         setupMenuItem("menu-speed", () => {
@@ -72,26 +91,20 @@ export const UI = {
                 return;
             }
             composition.changeAnimatedParameters();
-            UI.hideMenu();
             playPause(true);
+        });
+
+        setupMenuItem("menu-pause", () => {
+            playPause(false);
         });
 
         setupMenuItem("menu-save", () => {
             const randomPart = Math.random().toString(36).substring(2, 10);
             const filename = "geometrico_" + randomPart;
             p.saveCanvas(filename, "png");
-            UI.hideMenu();
-        });
-
-        setupMenuItem("menu-help", () => {
-            alert(
-                "When you are not in this menu:\n\nClick the top half of the screen to open this menu.\n\nClick the bottom half of the screen to play or pause the animation (if there is one)."
-            );
-            UI.hideMenu();
         });
 
         setupMenuItem("menu-close", () => {
-            UI.hideMenu();
         });
     },
 
